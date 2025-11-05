@@ -8,7 +8,7 @@
     git reset --hard origin/main
     cd backend || true
     alembic upgrade head || true
-    pm2 restart fastapi-backend || pm2 start uvicorn app.main:app --name fastapi-backend --host 0.0.0.0 --port 8000 &
+    pm2 restart fastapi-backend --update-env
 
     echo "🌀 Updating frontend..."
     cd ~/legatoo
