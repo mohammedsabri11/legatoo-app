@@ -18,27 +18,32 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          echo "StrictHostKeyChecking no" > ~/.ssh/config
+          cat >> ~/.ssh/config <<EOL
+          Host vps
+            HostName ${{ secrets.SERVER_HOST }}
+            User ${{ secrets.SERVER_USER }}
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          EOL
 
       - name: 🚀 Deploy to VPS
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          ssh vps << 'EOF'
           set -e
-
           echo "🌀 Updating backend..."
           cd ~/legatoo_backend
           git pull origin main
-          cd backend
+          cd backend || true
           alembic upgrade head || true
           pm2 restart fastapi-backend || pm2 start uvicorn app.main:app --name fastapi-backend --host 0.0.0.0 --port 8000 &
 
           echo "🌀 Updating frontend..."
           cd ~/legatoo
           git pull origin main
-          cd frontend
+          cd frontend || true
           npm install --legacy-peer-deps
           npm run build
           pm2 restart nextjs-frontend || pm2 start npm --name "nextjs-frontend" -- start
-          
+
           echo "✅ Deployment completed successfully!"
           EOF
