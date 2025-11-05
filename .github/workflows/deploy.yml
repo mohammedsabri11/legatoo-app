@@ -1,23 +1,53 @@
-- name: 🚀 Deploy to VPS
-  run: |
-    ssh vps << 'EOF'
-    set -e
-    echo "🌀 Updating backend..."
-    cd ~/legatoo_backend
-    git fetch origin main
-    git reset --hard origin/main
-    cd backend || true
-    alembic upgrade head || true
-    pm2 restart fastapi-backend --update-env
+name: 🚀 Auto Deploy to VPS
 
-    echo "🌀 Updating frontend..."
-    cd ~/legatoo
-    git fetch origin main
-    git reset --hard origin/main
-    cd frontend || true
-    npm install --legacy-peer-deps
-    npm run build
-    pm2 restart nextjs-frontend || pm2 start npm --name "nextjs-frontend" -- start
+on:
+  push:
+    branches:
+      - main
 
-    echo "✅ Deployment completed successfully!"
-    EOF
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat >> ~/.ssh/config <<EOL
+          Host vps
+            HostName ${{ secrets.SERVER_HOST }}
+            User ${{ secrets.SERVER_USER }}
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          EOL
+
+      - name: 🚀 Deploy to VPS
+        run: |
+          ssh vps << 'EOF'
+          set -e
+
+          echo "🔄 Pulling latest code..."
+          cd ~
+          git pull origin main
+
+          echo "🌀 Updating backend..."
+          cd ~/legatoo_backend
+          source venv/bin/activate
+          pip install -r requirements.txt
+          deactivate
+          alembic upgrade head || true
+          pm2 restart fastapi-backend || pm2 start uvicorn app.main:app --name fastapi-backend --host 0.0.0.0 --port 8000 &
+
+          echo "🌀 Updating frontend..."
+          cd ~/legatoo
+          npm install --legacy-peer-deps
+          npm run build
+          pm2 restart nextjs-frontend || pm2 start npm --name "nextjs-frontend" -- start
+
+          echo "✅ Deployment completed successfully!"
+          EOF
