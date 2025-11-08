@@ -1,0 +1,44 @@
+{
+  "title": "مكتبة القوالب",
+  "subtitle": "مجموعة شاملة من قوالب العقود القانونية",
+  "addNewTemplate": "إضافة قالب جديد",
+  "stats": {
+    "totalTemplates": "إجمالي القوالب",
+    "totalDownloads": "إجمالي التحميلات",
+    "averageRating": "متوسط التقييم",
+    "availableCategories": "الفئات المتاحة"
+  },
+  "categories": {
+    "title": "الفئات",
+    "all": "الكل",
+    "employment": "التوظيف",
+    "confidentiality": "السرية",
+    "service": "الخدمات",
+    "commercial": "التجارية"
+  },
+  "search": {
+    "placeholder": "البحث في القوالب...",
+    "filter": "تصفية"
+  },
+  "template": {
+    "preview": "عرض",
+    "use": "استخدام",
+    "downloads": "تحميل"
+  },
+  "popular": {
+    "title": "القوالب الأكثر شعبية"
+  },
+  "errors": {
+    "loadFailed": "فشل تحميل القوالب"
+  },
+  "preview": {
+    "title": "معاينة القالب",
+    "success": "تم إنشاء المعاينة بنجاح",
+    "error": "فشل إنشاء المعاينة",
+    "close": "إغلاق",
+    "loading": "جاري تحميل المعاينة...",
+    "pdfNotSupported": "معاينة PDF غير مدعومة. يرجى تحميل الملف.",
+    "download": "تحميل PDF"
+  }
+}
+

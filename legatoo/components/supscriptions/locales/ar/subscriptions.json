@@ -1,0 +1,148 @@
+{
+  "title": "خطط الاشتراك",
+  "subtitle": "اختر الخطة المناسبة لاحتياجاتك القانونية",
+  "plans": {
+    "freeTrial": {
+      "name": "فترة تجريبية مجانية",
+      "description": "فترة تجريبية قصيرة (7-14 يوم) للمستخدم الجديد",
+      "price": "مجاناً",
+      "period": "7-14 يوم",
+      "features": {
+        "title": "المزايا",
+        "items": {
+          "0": "وصول محدود للميزات الأساسية (رفع ملفات، AI Chat الأساسي)",
+          "1": "تقارير حالة أساسية",
+          "2": "مكتبة عقود محدودة"
+        }
+      },
+      "limitations": {
+        "title": "القيود",
+        "items": {
+          "0": "5 ملفات يوميًا",
+          "1": "20 رسالة AI",
+          "2": "لا يوجد تصدير PDF/Excel"
+        }
+      },
+      "cta": "ابدأ الآن"
+    },
+    "monthly": {
+      "name": "اشتراك شهري",
+      "description": "اشتراك شهري",
+      "price": "99 ريال",
+      "period": "شهرياً",
+      "features": {
+        "title": "المزايا",
+        "items": {
+          "0": "وصول كامل لكل المميزات",
+          "1": "تقارير متقدمة للامتثال والمخاطر",
+          "2": "AI Chat غير محدود تقريبًا",
+          "3": "توليد عقود بلا قيود"
+        }
+      },
+      "limitations": {
+        "title": "القيود",
+        "items": {
+          "0": "50 ملف/شهر",
+          "1": "50,000 tokens/شهر"
+        }
+      },
+      "cta": "اشترك الآن"
+    },
+    "annual": {
+      "name": "اشتراك سنوي",
+      "description": "اشتراك سنوي",
+      "price": "999 ريال",
+      "period": "سنوياً",
+      "features": {
+        "title": "المزايا",
+        "items": {
+          "0": "كل مزايا الشهري + خصم سنوي",
+          "1": "تقارير وتحليلات متقدمة",
+          "2": "دعم Multi-user / Teams"
+        }
+      },
+      "limitations": {
+        "title": "القيود",
+        "items": {
+          "0": "600,000 tokens/سنة",
+          "1": "رفع وتحليل ملفات غير محدود تقريبًا"
+        }
+      },
+      "cta": "وفّر مع الاشتراك السنوي"
+    }
+  },
+  "comparison": {
+    "title": "جدول المقارنة",
+    "subtitle": "قارن بين الخطط المختلفة واختر الأنسب لك",
+    "features": {
+      "fileUpload": "رفع وتحليل الملفات",
+      "aiChat": "رسائل AI Chat",
+      "contractGeneration": "توليد العقود",
+      "reportsExport": "تصدير التقارير",
+      "multiUser": "Multi-user / Teams",
+      "governmentIntegrations": "التكامل مع الجهات الحكومية"
+    },
+    "plans": {
+      "free": "مجاناً",
+      "monthly": "شهري",
+      "annual": "سنوي"
+    },
+    "notes": "ملاحظات",
+    "table": {
+      "fileUpload": {
+        "free": "5 ملفات/يوم",
+        "monthly": "50 ملف/شهر",
+        "annual": "600 ملف/سنة",
+        "note": "مع دعم OCR و NER محدود في Free"
+      },
+      "aiChat": {
+        "free": "20",
+        "monthly": "500/شهر",
+        "annual": "6000/سنة",
+        "note": "Tokens محددة لكل رسالة"
+      },
+      "contractGeneration": {
+        "free": "3/يوم",
+        "monthly": "50/شهر",
+        "annual": "600/سنة",
+        "note": "يعتمد على Templates"
+      },
+      "reportsExport": {
+        "free": "معطل",
+        "monthly": "10/شهر",
+        "annual": "غير محدود",
+        "note": ""
+      },
+      "multiUser": {
+        "free": "لا",
+        "monthly": "حتى 5 مستخدمين",
+        "annual": "حتى 50 مستخدم",
+        "note": ""
+      },
+      "governmentIntegrations": {
+        "free": "محدود",
+        "monthly": "وصول كامل",
+        "annual": "وصول كامل",
+        "note": ""
+      }
+    }
+  },
+  "technicalMechanisms": {
+    "title": "الآليات التقنية للتحكم في الاستهلاك",
+    "subtitle": "نظام متقدم لمراقبة وإدارة استهلاك الموارد",
+    "mechanisms": [
+      {
+        "title": "Token Tracking",
+        "description": "النظام يسجل التوكن المستهلك ويظهر إشعار عند قرب الحد."
+      },
+      {
+        "title": "Rate Limiting",
+        "description": "Free Trial يمنع التجاوز، Paid Plans يمكن ترقيتها بحزم إضافية."
+      },
+      {
+        "title": "Monitoring & Alerts",
+        "description": "تنبيهات عند 80% و 100% من الاستهلاك مع خيار ترقية."
+      }
+    ]
+  }
+}

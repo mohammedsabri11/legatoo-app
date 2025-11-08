@@ -1,0 +1,502 @@
+{
+  "navigation": {
+    "home": "الرئيسية",
+    "about": "    يتصل",
+    "services": "الخدمات",
+    "supscriptions": "الاشتراكات",
+    "contact": "اتصل بنا",
+    "faq": "الأسئلة الشائعة",
+    "login": "تسجيل الدخول"
+  },
+  "hero": {
+    "title": "المساعد القانوني  في المملكة العربية السعودية",
+    "subtitle": " من الاستشارات القانونية السريعة إلى الحلول المتكاملة التي يمكنك تطبيقها بنفسك، Legatoo يجعل الوصول إلى العدالة أسهل وأكثر فعالية في السعودية",
+    "buttons": {
+      "businessFormation": "تاسيس الشركات والأعمال",
+      "meetLawyer": "التقِ بمحامٍ",
+      "trademarkProtection": "حماية العلامة التجارية"
+    }
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "breadcrumb": {
+      "home": "الرئيسية",
+      "contact": "اتصل بنا"
+    },
+    "intro": "مهتم بخدماتنا القانونية أو تحتاج مساعدة؟ يرجى التواصل معنا.",
+    "info": {
+      "title": "معلومات الاتصال",
+      "subtitle": "تواصل معنا وأخبرنا كيف يمكننا مساعدتك",
+      "phone": {
+        "label": "الهاتف",
+        "value": "+966 53 009 9485"       
+      },
+      "email": {
+        "label": "البريد الإلكتروني",
+        "value": "IT@althomalilawyer.com"
+      },
+      "address": {
+        "label": "العنوان",
+        "value": "101 N Brand Blvd, Glendale, CA 91203"
+      },
+      "getDirections": "احصل على الاتجاهات",
+      "seeOnMap": "شاهد على الخريطة"
+    },
+    "form": {
+      "title": "نموذج الاتصال",
+      "subtitle": "تواصل معنا وأخبرنا كيف يمكننا مساعدتك",
+      "fullName": "الاسم الكامل",
+      "email": " البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "subject": "الموضوع",
+      "message": "رسالتك",
+      "submit": "إرسال"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "مرحباً",
+      "subtitle": "سجل دخولك للوصول إلى حسابك",
+      "backToHome": "العودة للرئيسية",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "signIn": "تسجيل الدخول",
+      "signingIn": "جاري تسجيل الدخول...",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "إنشاء حساب جديد",
+      "validation": {
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailTooLong": "البريد الإلكتروني طويل جداً",
+        "emailInvalid": "البريد الإلكتروني غير صحيح",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+        "passwordTooLong": "كلمة المرور طويلة جداً"
+      }
+    },
+    "signup": {
+      "backToHome": "العودة للرئيسية"
+    },
+    "forgotPassword": {
+      "title": "نسيت كلمة المرور؟",
+      "subtitle": "لا تقلق، سنرسل لك رابط إعادة تعيين كلمة المرور",
+      "backToHome": "العودة للرئيسية",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "sendResetLink": "إرسال رابط إعادة التعيين",
+      "sending": "جاري الإرسال...",
+      "backToSignIn": "العودة لتسجيل الدخول",
+      "success": {
+        "title": "تم إرسال الرابط",
+        "message": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد الخاص بك.",
+        "backToSignIn": "العودة لتسجيل الدخول",
+        "tryAgain": "إعادة المحاولة"
+      },
+      "support": {
+        "title": "نحن هنا لمساعدتك",
+        "message": "فريق الدعم الفني متاح على مدار الساعة لمساعدتك في حل أي مشكلة"
+      }
+    }
+  },
+  "footer": {
+    "company": {
+      "title": "الشركة",
+      "about": "حولنا",
+      "careers": "الوظائف",
+      "contact": "اتصل بنا",
+      "news": "في الأخبار",
+      "press": "الصحافة",
+      "investorRelations": "علاقات المستثمرين"
+    },
+    "support": {
+      "title": "الدعم",
+      "helpCenter": "مركز المساعدة",
+      "customerCare": "رعاية العملاء",
+      "speakWithAttorney": "تحدث مع محامٍ",
+      "joinAttorneyNetwork": "انضم إلى شبكة المحامين",
+      "security": "الأمان"
+    },
+    "learnMore": {
+      "title": "تعلم المزيد",
+      "businessContracts": "الأعمال والعقود",
+      "businessNameGenerator": "مولد أسماء الأعمال",
+      "legalFormTemplates": "قوالب النماذج القانونية",
+      "startLLC": "كيفية بدء شركة ذات مسؤولية محدودة",
+      "startCorporation": "كيفية بدء شركة",
+      "trademarkName": "كيفية تسجيل علامة تجارية"
+    },
+    "legal": {
+      "copyright": "© 2024 Legatoo. جميع الحقوق محفوظة.",
+      "disclaimer": "توفر Legatoo الوصول إلى المحامين المستقلين وأدوات الخدمة الذاتية. Legatoo ليست شركة محاماة ولا تقدم المشورة القانونية، باستثناء ما هو مخول من خلال شركة المحاماة التابعة لها.",
+      "attorneyAdvertisement": "إعلان المحامين: المحامين المعلن عنهم في هذا الموقع هم محامين مستقلين. راجع المحامي للتفاصيل. قد لا تكون خدمات المحامين متاحة في جميع الولايات.",
+      "paymentMethods": "طرق الدفع:"
+    }
+  },
+  "dashboard": {
+    "navigation": {
+      "dashboard": "لوحة التحكم",
+      "aiAssistant": "المساعد الذكي",
+      "legalAssistant": "المساعد القانوني الذكي",
+      "caseManagement": "إدارة القضايا",
+      "cases": "القضايا",
+      "aiCaseAnalysis": "تحليل القضايا بالذكاء الاصطناعي",
+      "contractAnalyseAI": "تحليل العقود بالذكاء الاصطناعي",
+      "classActions": "الدعاوى الجماعية",
+      "contractsHub": "مركز العقود",
+      "contractsLibrary": "مكتبة العقود",
+      "aiContractGenerator": "منشئ العقود بالذكاء الاصطناعي",
+      "contractTemplates": "قوالب العقود",
+      "templatesLibrary": "مكتبة القوالب",
+      "myContracts": "عقودي",
+      "smartEditor": "المحرر الذكي",
+      "complianceRisk": "الامتثال والمخاطر",
+      "complianceManagement": "إدارة الامتثال",
+      "ipCopyrightProtection": "حماية الملكية الفكرية وحقوق الطبع",
+      "fraudDetection": "كشف الاحتيال",
+      "analyticsReports": "التحليلات والتقارير",
+      "complianceScoreDashboard": "لوحة نقاط الامتثال",
+      "performanceReports": "تقارير الأداء",
+      "integrations": "التكاملات",
+      "adminPanel": "لوحة الإدارة",
+      "adminDashboard": "لوحة الإدارة الرئيسية",
+      "caseKnowledge": "قائمة القضايا السابقة",
+      "documentManagement": "إدارة المستندات",
+      "modelTraining": "تدريب النماذج",
+      "lawSourceList": "قائمة المصادر القانونية",
+      "subscribers": "المشتركين",
+      "plans": "خطط الاشتراكات",
+      "support": "الدعم والمساعدة",
+      "activityLogs": "سجلات النشاط"
+    },
+    "header": {
+      "searchPlaceholder": "البحث في القضايا والعقود والوثائق...",
+      "profile": "الملف الشخصي",
+      "accountSettings": "إعدادات الحساب",
+      "manageSubscription": "إدارة الاشتراك",
+      "logOut": "تسجيل الخروج"
+    },
+    "footer": {
+      "copyright": "© 2024 Legatoo. جميع الحقوق محفوظة.",
+      "privacyPolicy": "سياسة الخصوصية",
+      "termsOfService": "شروط الخدمة",
+      "cookiePolicy": "سياسة ملفات تعريف الارتباط",
+      "version": "الإصدار 1.0.0",
+      "lastUpdated": "آخر تحديث:"
+    },
+    "support": {
+      "title": "الدعم والمساعدة",
+      "subtitle": "إدارة تذاكر الدعم والمساعدة",
+      "createNewTicket": "إنشاء تذكرة جديدة",
+      "filterByStatus": "فلترة حسب الحالة:",
+      "all": "الكل",
+      "tickets": "التذاكر",
+      "noTicketsFound": "لا توجد تذاكر",
+      "accessDenied": "غير مصرح لك بالوصول",
+      "accessDeniedMessage": "تحتاج إلى صلاحيات المدير للوصول إلى هذه الصفحة",
+      "superAdminNotice": "🔧 أنت تتصل كمدير فائق. يمكنك الوصول إلى جميع التذاكر والرد عليها.",
+      "replied": "تم الرد",
+      "newReply": "رد جديد",
+      "supportReply": "رد الدعم:",
+      "resolved": "تم الحل:",
+      "created": "تم الإنشاء:",
+      "lastUpdated": "آخر تحديث:",
+      "status": {
+        "open": "مفتوحة",
+        "in_progress": "قيد المعالجة",
+        "resolved": "محلولة",
+        "closed": "مغلقة"
+      },
+      "priority": {
+        "low": "منخفضة",
+        "medium": "متوسطة",
+        "high": "عالية",
+        "urgent": "عاجلة"
+      },
+      "category": {
+        "general": "عام",
+        "technical": "تقني",
+        "billing": "الفوترة",
+        "bug_report": "بلاغ عن خطأ"
+      },
+      "modal": {
+        "createTitle": "إنشاء تذكرة جديدة",
+        "subject": "الموضوع",
+        "subjectPlaceholder": "أدخل موضوع التذكرة",
+        "description": "الوصف",
+        "descriptionPlaceholder": "أدخل تفاصيل المشكلة",
+        "category": "الفئة",
+        "priority": "الأولوية",
+        "cancel": "إلغاء",
+        "createTicket": "إنشاء التذكرة",
+        "supportResponse": "رد الدعم",
+        "responsePlaceholder": "أدخل ردك...",
+        "sendResponse": "إرسال الرد",
+        "yourTicketReplied": "✅ تم الرد على تذكرتك",
+        "waitingForResponse": "⏳ فريق الدعم سيقوم بالرد عليك قريباً",
+        "resolvedAt": "تم الحل في:"
+      },
+      "messages": {
+        "deleteConfirm": "هل أنت متأكد من حذف هذا التذكرة؟",
+        "responseSent": "تم إرسال الرد بنجاح",
+        "failedToLoad": "فشل تحميل التذاكر",
+        "failedToCreate": "فشل إنشاء التذكرة",
+        "failedToUpdate": "فشل تحديث التذكرة",
+        "failedToDelete": "فشل حذف التذكرة"
+      }
+    }
+  },
+  "subscriptions": {
+    "title": "اختر خطتك",
+    "subtitle": "اختر الخطة المثالية لاحتياجاتك القانونية",
+    "plans": {
+      "freeTrial": {
+        "name": "تجربة مجانية",
+        "description": "جرب خدماتنا مجاناً",
+        "price": "مجاناً",
+        "period": "7 أيام",
+        "features": {
+          "title": "المزايا",
+          "items": {
+            "0": "استشارة قانونية أساسية",
+            "1": "مراجعة المستندات",
+            "2": "دعم عبر البريد الإلكتروني"
+          }
+        },
+        "limitations": {
+          "title": "القيود",
+          "items": {
+            "0": "استشارات محدودة",
+            "1": "مزايا أساسية فقط",
+            "2": "لا يوجد دعم أولوية"
+          }
+        },
+        "cta": "ابدأ التجربة المجانية"
+      },
+      "monthly": {
+        "name": "اشتراك شهري",
+        "description": "اشتراك شهري",
+        "price": "299 ريال",
+        "period": "شهرياً",
+        "features": {
+          "title": "المزايا",
+          "items": {
+            "0": "استشارات غير محدودة",
+            "1": "توليد المستندات",
+            "2": "دعم أولوية",
+            "3": "قوالب قانونية"
+          }
+        },
+        "limitations": {
+          "title": "القيود",
+          "items": {
+            "0": "فوترة شهرية",
+            "1": "مزايا قياسية"
+          }
+        },
+        "cta": "اشترك الآن"
+      },
+      "annual": {
+        "name": "اشتراك سنوي",
+        "description": "اشتراك سنوي",
+        "price": "999 ريال",
+        "period": "سنوياً",
+        "features": {
+          "title": "المزايا",
+          "items": {
+            "0": "كل مزايا الشهري + خصم سنوي",
+            "1": "تقارير وتحليلات متقدمة",
+            "2": "دعم Multi-user / Teams"
+          }
+        },
+        "limitations": {
+          "title": "القيود",
+          "items": {
+            "0": "600,000 tokens/سنة",
+            "1": "رفع وتحليل ملفات غير محدود تقريباً"
+          }
+        },
+        "cta": "وفّر مع الاشتراك السنوي"
+      }
+    },
+    "comparison": {
+      "title": "جدول المقارنة",
+      "subtitle": "قارن بين الخطط المختلفة واختر الأنسب لك",
+      "features": {
+        "fileUpload": "رفع وتحليل الملفات",
+        "aiChat": "رسائل AI Chat",
+        "contractGeneration": "توليد العقود",
+        "reportsExport": "تصدير التقارير",
+        "multiUser": "Multi-user / Teams",
+        "governmentIntegrations": "التكامل مع الجهات الحكومية"
+      },
+      "plans": {
+        "free": "مجاناً",
+        "monthly": "شهري",
+        "annual": "سنوي"
+      },
+      "notes": "ملاحظات",
+      "table": {
+        "fileUpload": {
+          "free": "5 ملفات/يوم",
+          "monthly": "50 ملف/شهر",
+          "annual": "600 ملف/سنة",
+          "note": "دعم OCR و NER محدود في المجاني"
+        },
+        "aiChat": {
+          "free": "20",
+          "monthly": "500/شهر",
+          "annual": "6000/سنة",
+          "note": "الرموز المحددة لكل رسالة"
+        },
+        "contractGeneration": {
+          "free": "3/يوم",
+          "monthly": "50/شهر",
+          "annual": "600/سنة",
+          "note": "يعتمد على القوالب"
+        },
+        "reportsExport": {
+          "free": "معطل",
+          "monthly": "10/شهر",
+          "annual": "غير محدود",
+          "note": ""
+        },
+        "multiUser": {
+          "free": "لا",
+          "monthly": "حتى 5 مستخدمين",
+          "annual": "حتى 50 مستخدم",
+          "note": ""
+        },
+        "governmentIntegrations": {
+          "free": "محدود",
+          "monthly": "وصول كامل",
+          "annual": "وصول كامل",
+          "note": ""
+        }
+      }
+    }
+  },
+  "contracts": {
+    "title": "مكتبة العقود",
+    "subtitle": "إدارة وتنظيم جميع عقودك",
+    "newContract": "عقد جديد",
+    "searchPlaceholder": "البحث في العقود...",
+    "allStatus": "جميع الحالات",
+    "allCategories": "جميع الفئات",
+    "noContractsFound": "لا توجد عقود. قم بإنشاء عقدك الأول!",
+    "generateWithAI": "إنشاء عقد بالذكاء الاصطناعي",
+    "loading": "جاري تحميل العقود...",
+    "errorLoading": "حدث خطأ في تحميل العقود. يرجى المحاولة مرة أخرى.",
+    "showing": "عرض",
+    "of": "من",
+    "contracts": "عقد",
+    "previous": "السابق",
+    "next": "التالي",
+    "page": "صفحة",
+    "table": {
+      "title": "العنوان",
+      "category": "الفئة",
+      "status": "الحالة",
+      "created": "تاريخ الإنشاء",
+      "updated": "تاريخ التحديث",
+      "actions": "الإجراءات",
+      "noContractsFound": "لا توجد عقود",
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "card": {
+      "category": "الفئة",
+      "version": "الإصدار",
+      "aiGenerated": "منشأ بالذكاء الاصطناعي"
+    },
+    "status": {
+      "draft": "مسودة",
+      "active": "نشط",
+      "archived": "مؤرشف"
+    },
+    "details": {
+      "title": "تفاصيل ومحتوى العقد",
+      "edit": "تعديل",
+      "history": "السجل",
+      "status": "الحالة",
+      "version": "الإصدار",
+      "generatedByAI": "منشأ بالذكاء الاصطناعي",
+      "contractInformation": "معلومات العقد",
+      "jurisdiction": "الاختصاص",
+      "language": "اللغة",
+      "created": "تاريخ الإنشاء",
+      "contractContent": "محتوى العقد",
+      "noContentAvailable": "لا يوجد محتوى متاح"
+    },
+    "generate": {
+      "title": "منشئ العقود بالذكاء الاصطناعي",
+      "subtitle": "إنشاء عقود احترافية باستخدام الذكاء الاصطناعي من أوصاف اللغة الطبيعية",
+      "describeContract": "صف عقدك",
+      "describePlaceholder": "مثلاً، إنشاء عقد عمل لمهندس برمجيات في المملكة العربية السعودية براتب 15000 ريال شهرياً...",
+      "category": "الفئة (اختياري)",
+      "categoryPlaceholder": "مثلاً، التوظيف",
+      "jurisdiction": "الاختصاص (اختياري)",
+      "jurisdictionPlaceholder": "مثلاً، المملكة العربية السعودية",
+      "generate": "إنشاء العقد",
+      "generating": "جاري الإنشاء...",
+      "regenerate": "إعادة الإنشاء",
+      "saveAsDraft": "حفظ كمسودة",
+      "preview": "معاينة العقد المنشأ",
+      "generatingContract": "جاري إنشاء العقد...",
+      "willAppearHere": "سيظهر العقد المنشأ هنا"
+    },
+    "edit": {
+      "title": "تعديل العقد",
+      "contractTitle": "عنوان العقد",
+      "save": "حفظ",
+      "saving": "جاري الحفظ...",
+      "autoSaving": "حفظ تلقائي...",
+      "characters": "حرف",
+      "saveChanges": "حفظ التغييرات",
+      "startTyping": "ابدأ بكتابة محتوى عقدك..."
+    },
+    "templates": {
+      "title": "قوالب العقود",
+      "subtitle": "تصفح وإدارة قوالب العقود",
+      "newTemplate": "قالب جديد",
+      "searchPlaceholder": "البحث في القوالب...",
+      "loading": "جاري تحميل القوالب...",
+      "errorLoading": "حدث خطأ في تحميل القوالب.",
+      "noTemplatesFound": "لا توجد قوالب.",
+      "createTemplate": "إنشاء قالب",
+      "viewTemplate": "عرض القالب",
+      "public": "عام",
+      "private": "خاص",
+      "created": "تاريخ الإنشاء"
+    },
+    "templateForm": {
+      "title": "قالب جديد",
+      "templateName": "اسم القالب *",
+      "description": "الوصف",
+      "language": "اللغة",
+      "jurisdiction": "الاختصاص",
+      "jurisdictionPlaceholder": "مثلاً، المملكة العربية السعودية",
+      "tags": "العلامات (مفصولة بفواصل)",
+      "tagsPlaceholder": "توظيف، السعودية، اتفاقية عدم الإفصاح",
+      "makePublic": "جعل هذا القالب عاماً",
+      "templateContent": "محتوى القالب *",
+      "contentPlaceholder": "أدخل محتوى القالب. استخدم {{placeholder}} للقيم الديناميكية.",
+      "cancel": "إلغاء",
+      "create": "إنشاء القالب",
+      "creating": "جاري الإنشاء..."
+    },
+    "history": {
+      "title": "سجل المراجعات",
+      "subtitle": "عرض جميع الإصدارات والتغييرات التي تم إجراؤها على هذا العقد",
+      "contract": "العقد",
+      "totalRevisions": "إجمالي المراجعات",
+      "noHistory": "لا يوجد سجل مراجعات متاح بعد.",
+      "changesSummary": "ملخص التغييرات"
+    },
+    "deleteConfirm": "هل أنت متأكد من أرشفة هذا العقد؟",
+    "backToContracts": "العودة إلى العقود"
+  }
+}

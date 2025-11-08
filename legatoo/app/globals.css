@@ -1,0 +1,776 @@
+@import "tailwindcss";
+
+/* DIN Font Face Declarations */
+/* Place DIN font files in /public/fonts/ directory */
+/* Uncomment and adjust file paths when font files are added */
+/*
+@font-face {
+  font-family: "DIN";
+  src: url("/fonts/DIN-Regular.woff2") format("woff2"),
+       url("/fonts/DIN-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DIN";
+  src: url("/fonts/DIN-Medium.woff2") format("woff2"),
+       url("/fonts/DIN-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DIN";
+  src: url("/fonts/DIN-Bold.woff2") format("woff2"),
+       url("/fonts/DIN-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+@theme {
+  /* Color palette */
+  --color-primary-50: #f0f4f8;
+  --color-primary-100: #d9e2ec;
+  --color-primary-200: #bcccdc;
+  --color-primary-300: #9fb3c8;
+  --color-primary-400: #829ab1;
+  --color-primary-500: #627d98;
+  --color-primary-600: #486581;
+  --color-primary-700: #334e68;
+  --color-primary-800: #243b53;
+  --color-primary-900: #102a43;
+  --color-primary-950: #67a496;
+
+  --color-secondary-50: #f0f2f8;
+  --color-secondary-100: #d9e0f0;
+  --color-secondary-200: #b3c1e0;
+  --color-secondary-300: #8da2d0;
+  --color-secondary-400: #6783c0;
+  --color-secondary-500: #4164b0;
+  --color-secondary-600: #3655a0;
+  --color-secondary-700: #2b4680;
+  --color-secondary-800: #203760;
+  --color-secondary-900: #18295b;
+  --color-secondary-950: #0f1a3d;
+
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+  --color-success-950: #052e16;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
+
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+  --color-error-950: #450a0a;
+
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
+
+  /* Semantic colors - Light theme */
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-card: #ffffff;
+  --color-card-foreground: #171717;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #171717;
+  --color-primary: #67a496;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #18295b;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #0f172a;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #0ea5e9;
+  --color-bg-neutral-1000: #1e293b;
+  --color-bg-neutral-1000-light: #1e2933;
+  /* Font families */
+  --font-family-sans: var(--font-cairo), "Cairo", sans-serif;
+  --font-family-heading: var(--font-cairo), "Cairo", sans-serif;
+  --font-family-mono: var(--font-geist-mono), monospace;
+  --font-family-arabic: var(--font-cairo), "Cairo", sans-serif;
+
+  /* Font sizes - Reduced for smaller text */
+  --font-size-xs: 0.625rem;      /* 10px - text-xs */
+  --font-size-sm: 0.6875rem;     /* 11px - text-sm */
+  --font-size-base: 0.75rem;     /* 12px - text-base */
+  --font-size-lg: 0.875rem;      /* 14px - text-lg */
+  --font-size-xl: 1rem;          /* 16px - text-xl */
+  --font-size-2xl: 1.125rem;     /* 18px - text-2xl */
+  --font-size-3xl: 1.25rem;      /* 20px - text-3xl */
+  --font-size-4xl: 1.5rem;       /* 24px - text-4xl */
+  --font-size-5xl: 1.875rem;     /* 30px - text-5xl */
+  --font-size-6xl: 2.25rem;      /* 36px - text-6xl */
+  --font-size-7xl: 3rem;         /* 48px - text-7xl */
+  --font-size-8xl: 3.75rem;      /* 60px - text-8xl */
+  --font-size-9xl: 4.5rem;       /* 72px - text-9xl */
+
+  /* Border radius */
+  --radius: 0.5rem;
+}
+
+/* Dark theme colors */
+.dark {
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+  --color-card: #0f172a;
+  --color-card-foreground: #ededed;
+  --color-popover: #0f172a;
+  --color-popover-foreground: #ededed;
+  --color-primary: #67a496;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #18295b;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  --color-accent: #1e293b;
+  --color-accent-foreground: #f1f5f9;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #334155;
+  --color-input: #334155;
+  --color-ring: #38bdf8;
+}
+
+/* Base styles */
+* {
+  border-color: hsl(var(--border));
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+button{
+  cursor: pointer;
+}
+
+/* RTL Support */
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* RTL specific styles */
+.rtl .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+.rtl .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-right: calc(1rem * var(--tw-space-x-reverse));
+  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-cairo), "Cairo", sans-serif;
+  font-size: 11px; /* Base font size reduced from default 16px */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.bg-neutral-1000 {
+  background-color: var(--color-bg-neutral-1000);
+}
+.bg-neutral-1000-light {
+  background-color: var(--color-bg-neutral-1000-light);
+}
+/* Heading typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-cairo), "Cairo", sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-secondary);
+}
+
+h1 {
+  font-size: 1.5rem; /* ~16.5px - reduced from default 32px */
+}
+
+h2 {
+  font-size: 1.25rem; /* ~13.75px - reduced from default 24px */
+}
+
+h3 {
+  font-size: 1.125rem; /* ~12.4px - reduced from default 20px */
+}
+
+h4 {
+  font-size: 1rem; /* 11px - reduced from default 18px */
+}
+
+h5 {
+  font-size: 0.9375rem; /* ~10.3px - reduced from default 16px */
+}
+
+h6 {
+  font-size: 0.875rem; /* ~9.6px - reduced from default 14px */
+}
+
+/* Content text - inherit from body (11px) */
+p, span, li, td, th, label {
+  font-size: inherit; /* Inherits from body (11px) */
+}
+
+/* Override Tailwind text size utilities */
+.text-xs { font-size: 0.625rem !important; }      /* 10px */
+.text-sm { font-size: 0.6875rem !important; }     /* 11px */
+.text-base { font-size: 0.75rem !important; }     /* 12px */
+.text-lg { font-size: 0.875rem !important; }      /* 14px */
+.text-xl { font-size: 1rem !important; }          /* 16px */
+.text-2xl { font-size: 1.125rem !important; }     /* 18px */
+.text-3xl { font-size: 1.25rem !important; }      /* 20px */
+.text-4xl { font-size: 1.5rem !important; }       /* 24px */
+.text-5xl { font-size: 1.875rem !important; }     /* 30px */
+.text-6xl { font-size: 2.25rem !important; }      /* 36px */
+.text-7xl { font-size: 3rem !important; }         /* 48px */
+.text-8xl { font-size: 3.75rem !important; }      /* 60px */
+.text-9xl { font-size: 4.5rem !important; }       /* 72px */
+
+/* Typography utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Focus styles */
+.focus-visible {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  /* background: hsl(var(--muted)); */
+}
+
+::-webkit-scrollbar-thumb {
+  /* background: hsl(var(--muted-foreground)); */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  /* background: hsl(var(--foreground)); */
+}
+
+/* Selection styles */
+::selection {
+  background-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary-foreground));
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="ltr"] {
+  direction: ltr;
+}
+
+/* RTL-aware utilities */
+.rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Focus ring improvements */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+}
+
+/* Arabic font support */
+[lang="ar"], [dir="rtl"] {
+  font-family: var(--font-family-arabic);
+}
+
+/* RTL text alignment */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .text-left {
+  text-align: left;
+}
+
+[dir="rtl"] .text-right {
+  text-align: right;
+}
+
+/* Utility class for Arabic text */
+.font-arabic {
+  font-family: var(--font-family-arabic);
+}
+
+
+.highlightbg{
+  background-image: url('/highlite_bg.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat; 
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Enhanced parallax effect */
+.parallax-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-section::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/highlite_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: -1;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Custom transition for subscription cards */
+.subscription-card {
+  transition: all 0.7s ease-in-out;
+}
+
+.subscription-card:hover {
+  transform: translateY(-28px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.slow{
+  transition: all 0.7s ease-in-out;
+}
+/* Swiper Custom Styles */
+.testimonials-swiper .swiper-button-prev,
+.testimonials-swiper .swiper-button-next {
+  color: #6b7280;
+  background: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.testimonials-swiper .swiper-button-prev:hover,
+.testimonials-swiper .swiper-button-next:hover {
+  background: #f9fafb;
+}
+
+.testimonials-swiper .swiper-button-prev::after,
+.testimonials-swiper .swiper-button-next::after {
+  display: none;
+}
+
+.testimonials-swiper .swiper-pagination-bullet {
+  background: #d1d5db;
+  opacity: 1;
+  width: 12px;
+  height: 12px;
+  margin: 0 4px;
+}
+
+.testimonials-swiper .swiper-pagination-bullet-active {
+  background: var(--color-primary);
+}
+
+/* Status Badge Styles */
+.status-badge-wrapper {
+  display: inline-block;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.status-badge.clickable {
+  cursor: pointer;
+  border: 1px solid currentColor;
+}
+
+.status-badge.clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.status-badge-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-color: #93c5fd;
+}
+
+.status-badge-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+.status-badge-indexed {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+  border-color: #c084fc;
+}
+
+.status-badge:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* TipTap Editor Styles - Formal Contract Layout */
+.contract-editor-wrapper {
+  background: white;
+  padding: 2rem;
+  min-height: 600px;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.dark .contract-editor-wrapper {
+  background: #1f2937;
+}
+
+.contract-editor-content {
+  outline: none;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #1f2937;
+  max-width: 100%;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.dark .contract-editor-content {
+  color: #f3f4f6;
+}
+
+.ProseMirror {
+  outline: none;
+  padding: 2rem;
+  min-height: 600px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1f2937;
+  background: white;
+  font-family: var(--font-cairo), 'Cairo', 'Arial', 'Tahoma', sans-serif;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* Text selection styling */
+.ProseMirror ::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.ProseMirror ::-moz-selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.ProseMirror *::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.ProseMirror *::-moz-selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.dark .ProseMirror {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+
+/* Text selection styling for dark mode */
+.dark .ProseMirror ::selection {
+  background-color: #60a5fa;
+  color: #1f2937;
+}
+
+.dark .ProseMirror ::-moz-selection {
+  background-color: #60a5fa;
+  color: #1f2937;
+}
+
+.dark .ProseMirror *::selection {
+  background-color: #60a5fa;
+  color: #1f2937;
+}
+
+.dark .ProseMirror *::-moz-selection {
+  background-color: #60a5fa;
+  color: #1f2937;
+}
+
+.ProseMirror p {
+  margin: 0 0 1rem 0;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #9ca3af;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-style: italic;
+}
+
+.ProseMirror[dir="rtl"] p.is-editor-empty:first-child::before {
+  float: right;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding: 0 1.5rem;
+  margin: 0;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.ProseMirror li {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  line-height: 1.4;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #111827;
+}
+
+.dark .ProseMirror h1,
+.dark .ProseMirror h2,
+.dark .ProseMirror h3,
+.dark .ProseMirror h4,
+.dark .ProseMirror h5,
+.dark .ProseMirror h6 {
+  color: #f9fafb;
+}
+
+.ProseMirror h1 {
+  font-size: 24px;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.ProseMirror h2 {
+  font-size: 18px;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.dark .ProseMirror h2 {
+  border-bottom-color: #4b5563;
+}
+
+.ProseMirror h3 {
+  font-size: 16px;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.ProseMirror strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+.dark .ProseMirror strong {
+  color: #f9fafb;
+}
+
+.ProseMirror em {
+  font-style: italic;
+}
+
+/* RTL Support for Arabic */
+.ProseMirror[dir="rtl"] {
+  text-align: right;
+  direction: rtl;
+  font-family: var(--font-cairo), 'Cairo', 'Arial', 'Tahoma', sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.ProseMirror[dir="rtl"] p {
+  text-align: right;
+  line-height: 1.8;
+  margin: 0 0 1rem 0;
+}
+
+.ProseMirror[dir="rtl"] p:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror[dir="rtl"] h1 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.ProseMirror[dir="rtl"] h2 {
+  text-align: right;
+  font-size: 19px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.dark .ProseMirror[dir="rtl"] h2 {
+  border-bottom-color: #4b5563;
+}
+
+.ProseMirror[dir="rtl"] h3 {
+  text-align: right;
+  font-size: 17px;
+}
+
+.ProseMirror[dir="rtl"] ul,
+.ProseMirror[dir="rtl"] ol {
+  padding-right: 2rem;
+  padding-left: 0;
+  text-align: right;
+}
+
+.ProseMirror[dir="rtl"] li {
+  margin-right: 0;
+  margin-left: 1rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: right;
+  line-height: 1.8;
+}
+
+.ProseMirror[dir="rtl"] strong {
+  font-weight: 700;
+}
+
+/* Formal document styling */
+.ProseMirror {
+  page-break-inside: avoid;
+}
+
+.ProseMirror p:first-of-type {
+  margin-top: 0;
+}
+
+.ProseMirror p:last-of-type {
+  margin-bottom: 0;
+}

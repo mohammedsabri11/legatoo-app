@@ -1,0 +1,44 @@
+{
+  "title": "Templates Library",
+  "subtitle": "Comprehensive collection of legal contract templates",
+  "addNewTemplate": "Add New Template",
+  "stats": {
+    "totalTemplates": "Total Templates",
+    "totalDownloads": "Total Downloads",
+    "averageRating": "Average Rating",
+    "availableCategories": "Available Categories"
+  },
+  "categories": {
+    "title": "Categories",
+    "all": "All",
+    "employment": "Employment",
+    "confidentiality": "Confidentiality",
+    "service": "Service",
+    "commercial": "Commercial"
+  },
+  "search": {
+    "placeholder": "Search templates...",
+    "filter": "Filter"
+  },
+  "template": {
+    "preview": "Preview",
+    "use": "Use",
+    "downloads": "downloads"
+  },
+  "popular": {
+    "title": "Most Popular Templates"
+  },
+  "errors": {
+    "loadFailed": "Failed to load templates"
+  },
+  "preview": {
+    "title": "Template Preview",
+    "success": "Preview generated successfully",
+    "error": "Failed to generate preview",
+    "close": "Close",
+    "loading": "Loading preview...",
+    "pdfNotSupported": "PDF preview not supported. Please download the file.",
+    "download": "Download PDF"
+  }
+}
+

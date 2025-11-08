@@ -1,0 +1,606 @@
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse, FileResponse, Response
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+import uuid
+import os
+
+# Import models to ensure they are registered with SQLAlchemy
+from .config.enhanced_logging import setup_logging, get_logger
+from .config.embedding_config import EmbeddingConfig  # Import config EARLY
+from .db.database import create_tables
+
+# Import all models to ensure they are registered with SQLAlchemy before relationships are resolved
+from .models import (
+    User, Profile, RefreshToken,
+    Subscription, Plan, Billing, UsageTracking, UserRole, Role,
+    LawSource, LawArticle, LegalCase,
+    CaseSection, LegalTerm, KnowledgeDocument, KnowledgeChunk,
+    SupportTicket,
+    ContractTemplate, Contract,
+    ContractLibrary, ContractTemplateLibrary, ContractRevision, ContractAIRequest, ContractStatus,
+)
+
+# Import routers
+from .routes.profile_router import router as profile_router
+from .routes.auth_routes import router as auth_routes
+from .routes.user_routes import router as user_routes
+from .routes.emergency_admin_routes import router as emergency_admin_routes
+
+from .routes.subscription_router import router as subscription_router
+from .routes.premium_router import router as premium_router
+from .routes.legal_laws_router import router as legal_laws_router
+from .routes.legal_cases_router import router as legal_cases_router
+from .routes.support_router import router as support_router
+from .routes.templates_router import router as templates_router
+from .routes.analytics_router import router as analytics_router
+from .routes.contracts_library_router import router as contracts_library_router
+#from .routes.rag_router import router as rag_router
+from pydantic import BaseModel
+from typing import List
+# Import exception handlers
+from .utils.exception_handlers import (
+    app_exception_handler, validation_exception_handler,
+    not_found_exception_handler, conflict_exception_handler,
+    authentication_exception_handler, database_exception_handler,
+    external_service_exception_handler, http_exception_handler,
+    validation_error_handler, integrity_error_handler,
+    sqlalchemy_error_handler, general_exception_handler
+)
+from .utils.exceptions import (
+    AppException, ValidationException, NotFoundException,
+    ConflictException, AuthenticationException, DatabaseException,
+    ExternalServiceException
+)
+from .utils.api_exceptions import ApiException
+
+# Setup logging
+setup_logging()
+
+# Create FastAPI app
+app = FastAPI(
+    title="SQLite Auth FastAPI",
+    description="A FastAPI backend with SQLite authentication",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+# Add CORS middleware
+import os
+
+# Get CORS origins from environment variable
+cors_origins = os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else []
+
+# Default origins for development
+default_origins = [
+    # Next.js development ports
+    "http://localhost:3000",      # Next.js default dev server
+    "http://localhost:3001",      # Next.js alternative port
+    "http://localhost:3002",      # Next.js alternative port
+    "http://127.0.0.1:3000",     # Local Next.js
+    "http://127.0.0.1:3001",     # Local Next.js alternative
+    "http://127.0.0.1:3002",     # Local Next.js alternative
+    
+    # React development ports
+    "http://localhost:8080",      # React dev server
+    "http://127.0.0.1:8080",     # Local React
+    
+    # Network access - Your computer IP
+    "http://192.168.100.13:3000",  # Your Next.js frontend
+    "http://192.168.100.13:3001",  # Your Next.js alternative port
+    "http://192.168.100.13:3002",  # Your Next.js alternative port
+    "http://192.168.100.13:8080",  # Your React frontend
+    "http://192.168.100.13:8000",  # Your backend
+    "http://192.168.100.13:8001",  # Your backend alternative port
+    "http://192.168.100.13:8002",  # Your backend alternative port
+    
+    # Additional network IPs (for multiple devices)
+    "http://192.168.100.17:3000",  # Another Next.js frontend
+    "http://192.168.100.17:3001",  # Another Next.js alternative port
+    "http://192.168.100.17:3002",  # Another Next.js alternative port
+    "http://192.168.100.17:8080",  # Another React frontend
+    "http://192.168.100.17:8000",  # Another backend
+    "http://192.168.100.17:8001",  # Another backend alternative port
+    "http://192.168.100.17:8002",  # Another backend alternative port
+    
+    # Self-reference
+    "http://localhost:8000",      # Self-reference local
+    "http://127.0.0.1:8000",     # Self-reference local
+    
+    # Production domains (old)
+
+    
+    # Production domains (new)
+    "https://api.fastestfranchise.net",
+    "https://legatoo.fastestfranchise.net",
+]
+
+# Use environment CORS origins if available, otherwise use defaults
+# Always ensure production domains are included
+production_origins = [
+    "https://legatoo.fastestfranchise.net",
+    "https://api.fastestfranchise.net",
+    "http://legatoo.fastestfranchise.net",
+    "http://api.fastestfranchise.net",
+]
+
+if cors_origins and cors_origins[0]:
+    # Filter out empty strings
+    cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
+    # Merge environment origins with production origins (no duplicates)
+    allow_origins = list(set(cors_origins + production_origins))
+    print(f"🌐 CORS: Loaded {len(allow_origins)} origins (env + production)")
+else:
+    # Production mode - allow common origins
+    allow_origins = [
+        # Development origins
+        "http://localhost:3000",      # Next.js default
+        "http://localhost:3001",      # Next.js alternative
+        "http://localhost:3002",      # Next.js alternative
+        "http://127.0.0.1:3000",     # Local Next.js
+        "http://127.0.0.1:3001",     # Local Next.js alternative
+        "http://127.0.0.1:3002",     # Local Next.js alternative
+        "http://localhost:8000",      # Backend local
+        "http://127.0.0.1:8000",     # Backend local
+        
+        # Your computer network IP
+        "http://192.168.100.13:3000",  # Your Next.js frontend
+        "http://192.168.100.13:3001",  # Your Next.js alternative
+        "http://192.168.100.13:3002",  # Your Next.js alternative
+        "http://192.168.100.13:8080",  # Your React frontend
+        "http://192.168.100.13:8000",  # Your backend
+        "http://192.168.100.13:8001",  # Your backend alternative
+        "http://192.168.100.13:8002",  # Your backend alternative
+        
+        # Additional network IPs (for multiple devices)
+        "http://192.168.100.17:3000",  # Another Next.js frontend
+        "http://192.168.100.17:3001",  # Another Next.js alternative
+        "http://192.168.100.17:3002",  # Another Next.js alternative
+        "http://192.168.100.17:8080",  # Another React frontend
+        "http://192.168.100.17:8000",  # Another backend
+        "http://192.168.100.17:8001",  # Another backend alternative
+        "http://192.168.100.17:8002",  # Another backend alternative
+        
+        # Production origins
+        "http://srv1022733.hstgr.cloud:8000",
+        "https://srv1022733.hstgr.cloud:8000",
+        "http://srv1022733.hstgr.cloud",
+        "https://srv1022733.hstgr.cloud",
+        
+  
+        
+        # New domain - PRODUCTION (CRITICAL)
+        "http://api.fastestfranchise.net",
+        "https://api.fastestfranchise.net",
+        "http://legatoo.fastestfranchise.net",
+        "https://legatoo.fastestfranchise.net"
+    ]
+    # Always add production origins to defaults as well
+    allow_origins.extend(production_origins)
+    allow_origins = list(set(allow_origins))  # Remove duplicates
+    print(f"🌐 CORS: Using default origins list with production: {len(allow_origins)} origins")
+
+# Custom CORS origin validator for development
+def is_origin_allowed(origin: str) -> bool:
+    """Check if an origin is allowed (supports wildcards for development)."""
+    # In development, allow any localhost or local network origin
+    if origin.startswith("http://localhost") or origin.startswith("http://127.0.0.1"):
+        return True
+    # Allow any origin from 192.168.100.x network in development
+    if "192.168.100." in origin:
+        return True
+    # Check against explicit list
+    return origin in allow_origins
+
+# Add CORS middleware with comprehensive settings
+# IMPORTANT: allow_origin_regex and allow_origins should not both be set
+# We'll use allow_origins with explicit production domains + regex for dev
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allow_origins,  # Explicit list of allowed origins (including production)
+    allow_origin_regex=r"^(http://192\.168\.100\.\d+:\d+|http://localhost:\d+|http://127\.0\.0\.1:\d+)$",  # Allow local network IPs for development
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language", 
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-CSRF-Token",
+        "X-Correlation-ID",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+        "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Methods",
+        "Access-Control-Allow-Headers",
+    ],
+    expose_headers=[
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-Correlation-ID",
+    ],
+    max_age=3600,  # Cache preflight requests for 1 hour
+)
+
+# Explicit OPTIONS handler as fallback (middleware should handle, but this ensures it)
+@app.options("/{full_path:path}")
+async def options_handler(request: Request, full_path: str):
+    """
+    Handle OPTIONS preflight requests explicitly.
+    This ensures CORS preflight requests are always handled correctly.
+    """
+    origin = request.headers.get("origin")
+    
+    # Check if origin is allowed
+    is_allowed = (
+        origin in allow_origins if origin else False
+    ) or (
+        origin and any(origin.startswith(pattern.replace("*", "")) for pattern in allow_origins if "*" in pattern)
+    )
+    
+    # Check regex match for development origins
+    if origin and not is_allowed:
+        import re
+        dev_regex = r"^(http://192\.168\.100\.\d+:\d+|http://localhost:\d+|http://127\.0\.0\.1:\d+)$"
+        if re.match(dev_regex, origin):
+            is_allowed = True
+    
+    response_headers = {}
+    
+    if is_allowed:
+        response_headers["Access-Control-Allow-Origin"] = origin
+        response_headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+        response_headers["Access-Control-Allow-Headers"] = "Accept, Accept-Language, Content-Language, Content-Type, Authorization, X-Requested-With, X-CSRF-Token, X-Correlation-ID, Origin"
+        response_headers["Access-Control-Allow-Credentials"] = "true"
+        response_headers["Access-Control-Max-Age"] = "3600"
+    
+    return Response(
+        content="",
+        status_code=200,
+        headers=response_headers
+    )
+
+# Add a simple CORS test endpoint
+@app.get("/cors-test")
+async def cors_test(request: Request):
+    """Simple endpoint to test CORS configuration."""
+    origin = request.headers.get("origin", "No origin header")
+    
+    return {
+        "success": True,
+        "message": "CORS is working!",
+        "data": {
+            "timestamp": "2025-01-16T18:00:00Z",
+            "cors_origins": allow_origins,
+            "request_origin": origin,
+            "origin_allowed": origin in allow_origins if origin != "No origin header" else "N/A",
+            "credentials_enabled": True,
+            "all_origins_count": len(allow_origins)
+        }
+    }
+
+# Mount static files for frontend pages
+# This allows serving HTML files directly from the backend for testing
+if os.path.exists("."):
+    app.mount("/static", StaticFiles(directory="."), name="static")
+
+# Add exception handlers
+# Custom ApiException handler for standardized error responses
+@app.exception_handler(ApiException)
+async def api_exception_handler(request: Request, exc: ApiException):
+    """Handle ApiException with unified response format and logging."""
+    logger = get_logger(__name__)
+    correlation_id = request.headers.get("X-Correlation-ID", "no-correlation-id")
+    logger.error(f"ApiException [{correlation_id}]: {exc.payload}")
+    return JSONResponse(status_code=exc.status_code, content=exc.payload)
+
+# Enhanced HTTPException handler for dict details
+@app.exception_handler(HTTPException)
+async def enhanced_http_exception_handler(request: Request, exc: HTTPException):
+    """Handle HTTPException with unified response format and logging."""
+    logger = get_logger(__name__)
+    correlation_id = request.headers.get("X-Correlation-ID", "no-correlation-id")
+    
+    # If someone raised HTTPException(detail=dict), return it as-is
+    if isinstance(exc.detail, dict):
+        logger.warning(f"HTTPException [{correlation_id}]: {exc.detail}")
+        return JSONResponse(status_code=exc.status_code, content=exc.detail)
+    # Otherwise fallback to standard shape
+    fallback = {
+        "success": False,
+        "message": exc.detail if isinstance(exc.detail, str) else "Bad Request",
+        "data": None,
+        "errors": [{"field": None, "message": exc.detail if isinstance(exc.detail, str) else "Bad Request"}]
+    }
+    logger.warning(f"HTTPException [{correlation_id}]: {fallback}")
+    return JSONResponse(status_code=exc.status_code, content=fallback)
+
+app.add_exception_handler(AppException, app_exception_handler)
+app.add_exception_handler(ValidationException, validation_exception_handler)
+app.add_exception_handler(NotFoundException, not_found_exception_handler)
+app.add_exception_handler(ConflictException, conflict_exception_handler)
+app.add_exception_handler(AuthenticationException, authentication_exception_handler)
+app.add_exception_handler(DatabaseException, database_exception_handler)
+app.add_exception_handler(ExternalServiceException, external_service_exception_handler)
+# HTTPException handler is now handled by enhanced_http_exception_handler above
+app.add_exception_handler(RequestValidationError, validation_error_handler)
+app.add_exception_handler(IntegrityError, integrity_error_handler)
+app.add_exception_handler(SQLAlchemyError, sqlalchemy_error_handler)
+app.add_exception_handler(Exception, general_exception_handler)
+
+# Include routers
+app.include_router(profile_router, prefix="/api/v1")
+app.include_router(auth_routes)
+app.include_router(user_routes, prefix="/api/v1")
+app.include_router(emergency_admin_routes)  # Emergency admin routes
+app.include_router(subscription_router, prefix="/api/v1")
+app.include_router(premium_router, prefix="/api/v1")
+app.include_router(legal_laws_router)  # Legal Laws Management (includes document upload)
+app.include_router(legal_cases_router)  # Legal Cases Ingestion Pipeline
+app.include_router(support_router, prefix="/api/v1")  # Support Tickets Management
+app.include_router(templates_router)  # Contract Templates Management
+app.include_router(contracts_library_router, prefix="/api/v1")  # Contracts Library (Enhanced)
+app.include_router(analytics_router)  # Admin Analytics
+#app.include_router(rag_router)  # RAG Management
+@app.on_event("startup")
+async def startup_event():
+    """Create database tables on startup."""
+    logger = get_logger("startup")
+    logger.info("Starting application...")
+    
+    # Log embedding configuration
+    EmbeddingConfig.log_configuration()
+    
+    await create_tables()
+    
+    # Log system startup event
+    try:
+        from .utils.system_logger import log_info
+        await log_info(
+            message="Application started successfully",
+            endpoint="/startup",
+            method="SYSTEM"
+        )
+    except Exception as e:
+        logger.warning(f"Failed to log startup event: {str(e)}")
+    
+    logger.info("Application started successfully!")
+
+@app.get("/")
+async def root():
+    """Root endpoint."""
+    import socket
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+    
+    return {
+        "message": "Welcome to SQLite Auth FastAPI - 🎉 DEPLOYMENT TEST SUCCESS! 😊",
+        "version": "1.0.0",
+        "test_info": "🚀✨🎯 If you see this message, your deployment is working perfectly! 🎉",
+        "server_info": {
+            "hostname": hostname,
+            "local_ip": local_ip,
+            "access_urls": {
+                "local": "http://127.0.0.1:8000",
+                "network": f"http://{local_ip}:8000",
+                "docs": "http://127.0.0.1:8000/docs",
+                "health": "http://127.0.0.1:8000/health"
+            }
+        },
+        "endpoints": {
+            "signup": "/api/v1/auth/signup",
+            "login": "/api/v1/auth/login",
+            "refresh_token": "/api/v1/auth/refresh-token",
+            "logout": "/api/v1/auth/logout",
+            "profile": "/api/v1/profiles/me",
+            "subscriptions": "/api/v1/subscriptions/status",
+            "plans": "/api/v1/subscriptions/plans",
+            "premium": "/api/v1/premium/status",
+            "features": "/api/v1/premium/feature-limits",
+            "legal_assistant": {
+                "upload": "/api/v1/legal-assistant/documents/upload",
+                "search": "/api/v1/legal-assistant/documents/search",
+                "documents": "/api/v1/legal-assistant/documents",
+                "statistics": "/api/v1/legal-assistant/statistics"
+            },
+            "legal_laws": {
+                "upload": "/api/v1/laws/upload",
+                "upload_gemini_only": "/api/v1/laws/upload-gemini-only",
+                "upload_json": "/api/v1/laws/upload-json",
+                "upload_document": "/api/v1/laws/upload-document",
+                "list": "/api/v1/laws/",
+                "get_articles": "/api/v1/laws/{law_id}/articles",
+                "get_metadata": "/api/v1/laws/{law_id}",
+                "update": "/api/v1/laws/{law_id}",
+                "delete": "/api/v1/laws/{law_id}",
+                "reparse": "/api/v1/laws/{law_id}/reparse",
+                "analyze": "/api/v1/laws/{law_id}/analyze",
+                "statistics": "/api/v1/laws/{law_id}/statistics"
+            },
+            "rag": {
+                "upload": "/api/v1/rag/upload",
+                "search": "/api/v1/rag/search",
+                "status": "/api/v1/rag/status"
+            }
+        }
+    }
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    import datetime
+    return {
+        "status": "healthy", 
+        "service": "sqlite-auth-fastapi",
+        "test_message": "🎉 Deployment Test SUCCESS! 😊",
+        "emoji": "🚀✨🎯",
+        "deployment_time": datetime.datetime.now().isoformat(),
+        "message": "Hello from Legatoo Backend! If you see this, deployment is working perfectly! 🎉"
+    }
+
+
+@app.get("/test-deployment")
+async def test_deployment():
+    """Simple test endpoint to verify deployment is working."""
+    import datetime
+    import socket
+    
+    hostname = socket.gethostname()
+    timestamp = datetime.datetime.now().isoformat()
+    
+    return {
+        "status": "🎉 SUCCESS!",
+        "message": "Hello from Legatoo Backend! 😊",
+        "emoji": "🚀✨🎯",
+        "deployment_info": {
+            "hostname": hostname,
+            "deployed_at": timestamp,
+            "environment": "production",
+            "server": "Hostinger VPS",
+            "status": "Live and Running! 🟢"
+        },
+        "test_message": "If you can see this message, your deployment is working perfectly! 🎉",
+        "next_steps": [
+            "✅ Backend is deployed and running",
+            "✅ API endpoints are accessible", 
+            "✅ Ready for frontend integration",
+            "🚀 Time to build amazing features!"
+        ]
+    }
+
+@app.get("/debug-auth")
+async def debug_auth():
+    """Debug endpoint to test authentication service components."""
+    import os
+    from .services.auth_service import AuthService
+    from .db.database import get_db_session
+    from .config.urls import get_url_config
+    
+    try:
+        # Test environment variables
+        env_check = {
+            "SECRET_KEY": bool(os.getenv("SECRET_KEY")),
+            "JWT_SECRET": bool(os.getenv("JWT_SECRET")),
+            "DATABASE_URL": bool(os.getenv("DATABASE_URL")),
+            "ENVIRONMENT": os.getenv("ENVIRONMENT", "development"),
+            "FRONTEND_URL": os.getenv("FRONTEND_URL", "not_set"),
+            "BACKEND_URL": os.getenv("BACKEND_URL", "not_set"),
+        }
+        
+        # Test URL configuration
+        url_config = get_url_config()
+        url_config_info = {
+            "environment": url_config.environment,
+            "frontend_url": url_config.frontend_url,
+            "backend_url": url_config.backend_url,
+            "api_base_url": url_config.api_base_url,
+            "email_base_url": url_config.email_base_url,
+            "verification_url_example": url_config.get_verification_url("test-token"),
+        }
+        
+        # Test database connection
+        async with get_db_session() as db:
+            auth_service = AuthService(db, "debug-test")
+            
+            # Test user repository
+            test_email = "Ahmedkaml117m@gmail.com"
+            user = await auth_service.user_repository.get_user_model_by_email(test_email)
+            
+            return {
+                "status": "Debug Info",
+                "environment_check": env_check,
+                "url_configuration": url_config_info,
+                "database_connection": "✅ Connected",
+                "user_exists": user is not None,
+                "user_email": test_email,
+                "user_id": user.id if user else None,
+                "user_verified": user.is_verified if user else None,
+                "message": "Authentication service debug info"
+            }
+            
+    except Exception as e:
+        return {
+            "status": "❌ Error",
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "message": "Debug endpoint failed - this shows the login issue"
+        }
+
+
+@app.get("/debug-urls")
+async def debug_urls():
+    """Debug endpoint to check URL configuration."""
+    from .config.urls import get_url_config
+    
+    try:
+        url_config = get_url_config()
+        return {
+            "status": "URL Configuration Debug",
+            "environment": url_config.environment,
+            "frontend_url": url_config.frontend_url,
+            "backend_url": url_config.backend_url,
+            "api_base_url": url_config.api_base_url,
+            "email_base_url": url_config.email_base_url,
+            "auth_urls": url_config.auth_urls,
+            "email_urls": url_config.email_urls,
+            "verification_url_example": url_config.get_verification_url("test-token-123"),
+            "password_reset_url_example": url_config.get_password_reset_url("test-reset-token-456"),
+            "message": "This shows the URL configuration used for email verification"
+        }
+    except Exception as e:
+        return {
+            "status": "❌ Error",
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "message": "Failed to load URL configuration"
+        }
+
+
+# Frontend HTML pages for testing
+@app.get("/email-verification.html")
+async def email_verification_page():
+    """Serve email verification page."""
+    if os.path.exists("email-verification.html"):
+        return FileResponse("email-verification.html")
+    else:
+        raise HTTPException(status_code=404, detail="Email verification page not found")
+
+
+
+@app.get("/password-reset.html")
+async def password_reset_page():
+    """Serve password reset page."""
+    if os.path.exists("password-reset.html"):
+        return FileResponse("password-reset.html")
+    else:
+        raise HTTPException(status_code=404, detail="Password reset page not found")
+
+
+@app.get("/app-config.js")
+async def app_config_js():
+    """Serve app configuration JavaScript file."""
+    if os.path.exists("app-config.js"):
+        return FileResponse("app-config.js", media_type="application/javascript")
+    else:
+        raise HTTPException(status_code=404, detail="App config file not found")
+
+
+@app.get("/logo.png")
+async def logo_png():
+    """Serve logo image file."""
+    if os.path.exists("logo.png"):
+        return FileResponse("logo.png", media_type="image/png")
+    else:
+        raise HTTPException(status_code=404, detail="Logo file not found")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

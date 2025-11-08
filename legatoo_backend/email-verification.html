@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - Legatoo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #679594;
+            min-height: 100vh;
+            max-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.12);
+            padding: 48px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #679594;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            width: 180px;
+            height:auto;
+            border-radius: 24px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 32px;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .status-container {
+            margin: 32px 0;
+        }
+
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .message {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .success-message {
+            color: #065f46;
+        }
+
+        .error-message {
+            color: #991b1b;
+        }
+
+        .loading-message {
+            color: #1e40af;
+        }
+
+        .timer {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .timer-text {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .countdown {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 12px 0;
+        }
+
+        .button {
+            background: #679594;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(24, 41, 91, 0.3);
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(24, 41, 91, 0.4);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button-secondary {
+            background: #6b7280;
+            box-shadow: 0 4px 16px rgba(107, 114, 128, 0.3);
+        }
+
+        .button-secondary:hover {
+            box-shadow: 0 8px 24px rgba(107, 114, 128, 0.4);
+        }
+
+        .spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-details {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            color: #991b1b;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #f3f4f6;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 32px 24px;
+            }
+            
+            .brand-name {
+                font-size: 28px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .status-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <div class="logo">
+                <img src="logo.png" alt="Legatoo Logo">
+            </div>
+            <div class="brand-name">Legatoo</div>
+            <div class="tagline">Your Legal Assistant</div>
+        </div>
+        <h1>Email Verification</h1>
+        <p class="subtitle">Please verify your email address to continue</p>
+        
+        <div class="status-container">
+            <div id="statusIcon" class="status-icon loading">
+                <div class="spinner"></div>
+            </div>
+            <div id="statusMessage" class="message loading-message">
+                Verifying your email address...
+            </div>
+        </div>
+
+        <div id="timerContainer" class="timer" style="display: none;">
+            <div class="timer-text">Redirecting to login page in:</div>
+            <div id="countdown" class="countdown">5</div>
+        </div>
+
+        <div id="buttonContainer" style="display: none;">
+            <a href="#" class="button" id="loginButton">Go to Login</a>
+            <button class="button button-secondary" onclick="location.reload()">Try Again</button>
+        </div>
+
+        <div id="errorContainer" class="error-details" style="display: none;">
+            <strong>Error Details:</strong>
+            <div id="errorDetails"></div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Legatoo. All rights reserved.</p>
+            <p>Your trusted legal assistant platform</p>
+        </div>
+    </div>
+
+    <script src="app-config.js"></script>
+    <script>
+        class EmailVerification {
+            constructor() {
+                this.apiBase = window.APP_CONFIG.getApiBaseUrl();
+                this.frontendUrl = window.APP_CONFIG.getFrontendUrl();
+                this.token = this.getTokenFromUrl();
+                this.countdown = 5;
+                this.countdownInterval = null;
+                
+                if (this.token) {
+                    this.verifyEmail();
+                } else {
+                    this.showError('No verification token found in URL');
+                }
+            }
+
+            getTokenFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('token');
+            }
+
+            async verifyEmail() {
+                try {
+                    const response = await fetch(`${this.apiBase}/verify-email?verification_token=${this.token}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        this.showSuccess(result);
+                    } else {
+                        this.showError(result.message || 'Verification failed', result.errors);
+                    }
+                } catch (error) {
+                    console.error('Verification error:', error);
+                    this.showError('Network error. Please check your connection and try again.');
+                }
+            }
+
+            showSuccess(result) {
+                // Update UI for success
+                document.getElementById('statusIcon').innerHTML = '✓';
+                document.getElementById('statusIcon').className = 'status-icon success';
+                document.getElementById('statusMessage').innerHTML = 'Email verified successfully!';
+                document.getElementById('statusMessage').className = 'message success-message';
+
+                // Set login button URL dynamically
+                document.getElementById('loginButton').href = this.frontendUrl + '/auth/login/';
+
+                // Show timer and buttons
+                document.getElementById('timerContainer').style.display = 'block';
+                document.getElementById('buttonContainer').style.display = 'block';
+
+                // Start countdown
+                this.startCountdown();
+            }
+
+            showError(message, errors = null) {
+                // Update UI for error
+                document.getElementById('statusIcon').innerHTML = '✗';
+                document.getElementById('statusIcon').className = 'status-icon error';
+                document.getElementById('statusMessage').innerHTML = message;
+                document.getElementById('statusMessage').className = 'message error-message';
+
+                // Show error details if available
+                if (errors && errors.length > 0) {
+                    const errorDetails = errors.map(error => 
+                        `${error.field ? error.field + ': ' : ''}${error.message}`
+                    ).join('<br>');
+                    document.getElementById('errorDetails').innerHTML = errorDetails;
+                    document.getElementById('errorContainer').style.display = 'block';
+                }
+
+                // Show retry button
+                document.getElementById('buttonContainer').style.display = 'block';
+                document.getElementById('loginButton').style.display = 'none';
+            }
+
+            startCountdown() {
+                this.countdownInterval = setInterval(() => {
+                    this.countdown--;
+                    document.getElementById('countdown').textContent = this.countdown;
+
+                    if (this.countdown <= 0) {
+                        clearInterval(this.countdownInterval);
+                        window.location.href = this.frontendUrl + '/auth/login/';
+                    }
+                }, 1000);
+            }
+
+            stopCountdown() {
+                if (this.countdownInterval) {
+                    clearInterval(this.countdownInterval);
+                }
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new EmailVerification();
+        });
+
+        // Stop countdown if user clicks login button
+        document.getElementById('loginButton').addEventListener('click', () => {
+            if (window.emailVerification) {
+                window.emailVerification.stopCountdown();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,502 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "Connect",
+    "services": "Services",
+    "supscriptions": "Supscriptions",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "login":   "Login"
+  },
+  "hero": {
+    "title": "KSA. Legal Help in Saudi Arabia",
+    "subtitle": "From quick legal advice to integrated solutions that you can apply yourself, Legatoo makes access to justice easier and more effective in Saudi Arabia.",
+    "buttons": {
+      "businessFormation": "Establish Your Company ",
+      "meetLawyer": "Meet with a Lawyer",
+      "trademarkProtection": "Trademark Protection"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "breadcrumb": {
+      "home": "Home",
+      "contact": "Contact Us"
+    },
+    "intro": "Interested in our legal services or need help? Then please get in touch with us.",
+    "info": {
+      "title": "Contact Information",
+      "subtitle": "Get in touch and let us know how we can help",
+      "phone": {
+        "label": "Phone",
+        "value": "+966 53 009 9485"   
+      },
+      "email": {
+        "label": "Email",
+        "value": "support@legatoo.com"
+      },
+      "address": {
+        "label": "Address",
+        "value": "101 N Brand Blvd, Glendale, CA 91203"
+      },
+      "getDirections": "Get Directions",
+      "seeOnMap": "See On Map"
+    },
+    "form": {
+      "title": "Contact Form",
+      "subtitle": "Get in touch and let us know how we can help",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "subject": "Subject",
+      "message": "Your Message",
+      "submit": "Submit"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome",
+      "subtitle": "Sign in to your account to continue",
+      "backToHome": "Back to Home",
+      "email": "Email Address",
+      "password": "Password",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up here",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailTooLong": "Email is too long",
+        "emailInvalid": "Please enter a valid email address",
+        "passwordRequired": "Password is required",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "passwordTooLong": "Password is too long"
+      }
+    },
+    "signup": {
+      "backToHome": "Back to Home"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password?",
+      "subtitle": "No worries, we'll send you reset instructions",
+      "backToHome": "Back to Home",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "sendResetLink": "Send Reset Link",
+      "sending": "Sending...",
+      "backToSignIn": "Back to Sign In",
+      "success": {
+        "title": "Check Your Email",
+        "message": "We've sent a password reset link to your email address. Please check your inbox and follow the instructions.",
+        "backToSignIn": "Back to Sign In",
+        "tryAgain": "Try Again"
+      },
+      "support": {
+        "title": "We're Here to Help",
+        "message": "Our support team is available 24/7 to help you resolve any issues"
+      }
+    }
+  },
+  "footer": {
+    "company": {
+      "title": "Company",
+      "about": "About",
+      "careers": "Careers",
+      "contact": "Contact",
+      "news": "In the News",
+      "press": "Press",
+      "investorRelations": "Investor Relations"
+    },
+    "support": {
+      "title": "Support",
+      "helpCenter": "Help Center",
+      "customerCare": "Customer Care",
+      "speakWithAttorney": "Speak with an attorney",
+      "joinAttorneyNetwork": "Join our attorney network",
+      "security": "Security"
+    },
+    "learnMore": {
+      "title": "Learn more",
+      "businessContracts": "Business and contracts",
+      "businessNameGenerator": "Business Name Generator",
+      "legalFormTemplates": "Legal form templates",
+      "startLLC": "How to Start an LLC",
+      "startCorporation": "How to Start a Corporation",
+      "trademarkName": "How to Trademark a Name"
+    },
+    "legal": {
+      "copyright": "© 2024 Legatoo. All rights reserved.",
+      "disclaimer": "Legatoo provides access to independent attorneys and self-service tools. Legatoo is not a law firm and does not provide legal advice, except where authorized through its subsidiary law firm.",
+      "attorneyAdvertisement": "ATTORNEY ADVERTISEMENT: Attorneys advertised on this site are independent attorneys. See attorney for details. Attorney services may not be available in all states.",
+      "paymentMethods": "Payment Methods:"
+    }
+  },
+  "dashboard": {
+    "navigation": {
+      "dashboard": "Dashboard",
+      "aiAssistant": "AI Assistant",
+      "legalAssistant": "AI Legal Assistant",
+      "caseManagement": "Case Management",
+      "cases": "Cases",
+      "aiCaseAnalysis": "AI Case Analysis",
+      "contractAnalyseAI": "Contract Analyse AI",
+      "classActions": "Class Actions",
+      "contractsHub": "Contracts Hub",
+      "contractsLibrary": "Contracts Library",
+      "aiContractGenerator": "AI Contract Generator",
+      "contractTemplates": "Contract Templates",
+      "templatesLibrary": "Templates Library",
+      "myContracts": "My Contracts",
+      "smartEditor": "Smart Editor",
+      "complianceRisk": "Compliance & Risk",
+      "complianceManagement": "Compliance Management",
+      "ipCopyrightProtection": "IP & Copyright Protection",
+      "fraudDetection": "Fraud Detection",
+      "analyticsReports": "Analytics & Reports",
+      "complianceScoreDashboard": "Compliance Score Dashboard",
+      "performanceReports": "Performance Reports",
+      "integrations": "Integrations",
+      "adminPanel": "Admin Panel",
+      "adminDashboard": "Admin Dashboard",
+      "caseKnowledge": "Case Knowledge",
+      "documentManagement": "Document Management",
+      "modelTraining": "Model Training",
+      "lawSourceList": "Law Source List",
+      "subscribers": "Subscribers",
+      "plans": "Plans",
+      "support": "Support",
+      "activityLogs": "Activity Logs"
+    },
+    "header": {
+      "searchPlaceholder": "Search cases, contracts, documents...",
+      "profile": "Profile",
+      "accountSettings": "Account Settings",
+      "manageSubscription": "Manage Subscription",
+      "logOut": "Log Out"
+    },
+    "footer": {
+      "copyright": "© 2024 Legatoo. All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookiePolicy": "Cookie Policy",
+      "version": "Version 1.0.0",
+      "lastUpdated": "Last updated:"
+    },
+    "support": {
+      "title": "Support & Help",
+      "subtitle": "Manage support tickets and get help",
+      "createNewTicket": "Create New Ticket",
+      "filterByStatus": "Filter by status:",
+      "all": "All",
+      "tickets": "Tickets",
+      "noTicketsFound": "No tickets found",
+      "accessDenied": "Access Denied",
+      "accessDeniedMessage": "You need admin privileges to access this page",
+      "superAdminNotice": "🔧 You are accessing as a Super Admin. You can view all tickets and respond to them.",
+      "replied": "Replied",
+      "newReply": "New Reply",
+      "supportReply": "Support Reply:",
+      "resolved": "Resolved:",
+      "created": "Created:",
+      "lastUpdated": "Last updated:",
+      "status": {
+        "open": "Open",
+        "in_progress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "category": {
+        "general": "General",
+        "technical": "Technical",
+        "billing": "Billing",
+        "bug_report": "Bug Report"
+      },
+      "modal": {
+        "createTitle": "Create New Ticket",
+        "subject": "Subject",
+        "subjectPlaceholder": "Enter ticket subject",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe your issue in detail",
+        "category": "Category",
+        "priority": "Priority",
+        "cancel": "Cancel",
+        "createTicket": "Create Ticket",
+        "supportResponse": "Support Response",
+        "responsePlaceholder": "Enter your response...",
+        "sendResponse": "Send Response",
+        "yourTicketReplied": "✅ Your Ticket Has Been Replied",
+        "waitingForResponse": "⏳ The support team will respond to you soon",
+        "resolvedAt": "Resolved at:"
+      },
+      "messages": {
+        "deleteConfirm": "Are you sure you want to delete this ticket?",
+        "responseSent": "Response sent successfully",
+        "failedToLoad": "Failed to load tickets",
+        "failedToCreate": "Failed to create ticket",
+        "failedToUpdate": "Failed to update ticket",
+        "failedToDelete": "Failed to delete ticket"
+      }
+    }
+  },
+  "subscriptions": {
+    "title": "Choose Your Plan",
+    "subtitle": "Select the perfect plan for your legal needs",
+    "plans": {
+      "freeTrial": {
+        "name": "Free Trial",
+        "description": "Try our services for free",
+        "price": "Free",
+        "period": "7 days",
+        "features": {
+          "title": "Features",
+          "items": {
+            "0": "Basic legal consultation",
+            "1": "Document review",
+            "2": "Email support"
+          }
+        },
+        "limitations": {
+          "title": "Limitations",
+          "items": {
+            "0": "Limited consultations",
+            "1": "Basic features only",
+            "2": "No priority support"
+          }
+        },
+        "cta": "Start Free Trial"
+      },
+      "monthly": {
+        "name": "Monthly Subscription",
+        "description": "Monthly subscription",
+        "price": "299 SAR",
+        "period": "Monthly",
+        "features": {
+          "title": "Features",
+          "items": {
+            "0": "Unlimited consultations",
+            "1": "Document generation",
+            "2": "Priority support",
+            "3": "Legal templates"
+          }
+        },
+        "limitations": {
+          "title": "Limitations",
+          "items": {
+            "0": "Monthly billing",
+            "1": "Standard features"
+          }
+        },
+        "cta": "Subscribe Now"
+      },
+      "annual": {
+        "name": "Annual Subscription",
+        "description": "Annual subscription",
+        "price": "999 SAR",
+        "period": "Annually",
+        "features": {
+          "title": "Features",
+          "items": {
+            "0": "All monthly features + annual discount",
+            "1": "Advanced reports and analytics",
+            "2": "Multi-user / Teams support"
+          }
+        },
+        "limitations": {
+          "title": "Limitations",
+          "items": {
+            "0": "600,000 tokens/year",
+            "1": "Nearly unlimited file upload and analysis"
+          }
+        },
+        "cta": "Save with Annual Plan"
+      }
+    },
+    "comparison": {
+      "title": "Comparison Table",
+      "subtitle": "Compare different plans and choose the best one for you",
+      "features": {
+        "fileUpload": "File Upload & Analysis",
+        "aiChat": "AI Chat Messages",
+        "contractGeneration": "Contract Generation",
+        "reportsExport": "Reports Export",
+        "multiUser": "Multi-user / Teams",
+        "governmentIntegrations": "Government Integrations"
+      },
+      "plans": {
+        "free": "Free",
+        "monthly": "Monthly",
+        "annual": "Annual"
+      },
+      "notes": "Notes",
+      "table": {
+        "fileUpload": {
+          "free": "5 files/day",
+          "monthly": "50 files/month",
+          "annual": "600 files/year",
+          "note": "Limited OCR and NER support in Free"
+        },
+        "aiChat": {
+          "free": "20",
+          "monthly": "500/month",
+          "annual": "6000/year",
+          "note": "Tokens defined per message"
+        },
+        "contractGeneration": {
+          "free": "3/day",
+          "monthly": "50/month",
+          "annual": "600/year",
+          "note": "Depends on Templates"
+        },
+        "reportsExport": {
+          "free": "Disabled",
+          "monthly": "10/month",
+          "annual": "Unlimited",
+          "note": ""
+        },
+        "multiUser": {
+          "free": "No",
+          "monthly": "Up to 5 users",
+          "annual": "Up to 50 users",
+          "note": ""
+        },
+        "governmentIntegrations": {
+          "free": "Limited",
+          "monthly": "Full Access",
+          "annual": "Full Access",
+          "note": ""
+        }
+      }
+    }
+  },
+  "contracts": {
+    "title": "Contracts Library",
+    "subtitle": "Manage and organize all your contracts",
+    "newContract": "New Contract",
+    "searchPlaceholder": "Search contracts...",
+    "allStatus": "All Status",
+    "allCategories": "All Categories",
+    "noContractsFound": "No contracts found. Create your first contract!",
+    "generateWithAI": "Generate Contract with AI",
+    "loading": "Loading contracts...",
+    "errorLoading": "Error loading contracts. Please try again.",
+    "showing": "Showing",
+    "of": "of",
+    "contracts": "contracts",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "table": {
+      "title": "Title",
+      "category": "Category",
+      "status": "Status",
+      "created": "Created",
+      "updated": "Updated",
+      "actions": "Actions",
+      "noContractsFound": "No contracts found",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "card": {
+      "category": "Category",
+      "version": "Version",
+      "aiGenerated": "AI Generated"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "details": {
+      "title": "Contract Details and Content",
+      "edit": "Edit",
+      "history": "History",
+      "status": "Status",
+      "version": "Version",
+      "generatedByAI": "Generated by AI",
+      "contractInformation": "Contract Information",
+      "jurisdiction": "Jurisdiction",
+      "language": "Language",
+      "created": "Created",
+      "contractContent": "Contract Content",
+      "noContentAvailable": "No content available"
+    },
+    "generate": {
+      "title": "AI Contract Generator",
+      "subtitle": "Generate professional contracts using AI from natural language descriptions",
+      "describeContract": "Describe your contract",
+      "describePlaceholder": "e.g., Create an employment contract for a software engineer position in Saudi Arabia with a salary of 15,000 SAR per month...",
+      "category": "Category (optional)",
+      "categoryPlaceholder": "e.g., Employment",
+      "jurisdiction": "Jurisdiction (optional)",
+      "jurisdictionPlaceholder": "e.g., Saudi Arabia",
+      "generate": "Generate Contract",
+      "generating": "Generating...",
+      "regenerate": "Regenerate",
+      "saveAsDraft": "Save as Draft",
+      "preview": "Generated Contract Preview",
+      "generatingContract": "Generating contract...",
+      "willAppearHere": "Generated contract will appear here"
+    },
+    "edit": {
+      "title": "Edit Contract",
+      "contractTitle": "Contract Title",
+      "save": "Save",
+      "saving": "Saving...",
+      "autoSaving": "Auto-saving...",
+      "characters": "characters",
+      "saveChanges": "Save Changes",
+      "startTyping": "Start typing your contract content..."
+    },
+    "templates": {
+      "title": "Contract Templates",
+      "subtitle": "Browse and manage contract templates",
+      "newTemplate": "New Template",
+      "searchPlaceholder": "Search templates...",
+      "loading": "Loading templates...",
+      "errorLoading": "Error loading templates.",
+      "noTemplatesFound": "No templates found.",
+      "createTemplate": "Create Template",
+      "viewTemplate": "View Template",
+      "public": "Public",
+      "private": "Private",
+      "created": "Created"
+    },
+    "templateForm": {
+      "title": "New Template",
+      "templateName": "Template Name *",
+      "description": "Description",
+      "language": "Language",
+      "jurisdiction": "Jurisdiction",
+      "jurisdictionPlaceholder": "e.g., Saudi Arabia",
+      "tags": "Tags (comma-separated)",
+      "tagsPlaceholder": "employment, saudi-arabia, nda",
+      "makePublic": "Make this template public",
+      "templateContent": "Template Content *",
+      "contentPlaceholder": "Enter template content. Use {{placeholder}} for dynamic values.",
+      "cancel": "Cancel",
+      "create": "Create Template",
+      "creating": "Creating..."
+    },
+    "history": {
+      "title": "Revision History",
+      "subtitle": "View all versions and changes made to this contract",
+      "contract": "Contract",
+      "totalRevisions": "Total Revisions",
+      "noHistory": "No revision history available yet.",
+      "changesSummary": "changes summary"
+    },
+    "deleteConfirm": "Are you sure you want to archive this contract?",
+    "backToContracts": "Back to Contracts"
+  }
+}

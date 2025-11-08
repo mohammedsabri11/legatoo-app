@@ -1,0 +1,108 @@
+{
+  "services": {
+    "title": "Legal help for every part of your life",
+    "business": {
+      "title": "For your business",
+      "description": "Whether you need to form a company, apply for business and permits, or get a tax ID, we'll help your business get its structure.",
+      "cta": "Start my business",
+      "options": {
+        "llc": "LLC",
+        "corporation": "Corporation",
+        "dba": "DBA",
+        "getLegalHelp": "Get Legal Help"
+      }
+    },
+    "family": {
+      "title": "For you and your family",
+      "description": "From wills to powers of attorney, the right estate planning documents can safeguard you and your loved ones from life's ups and downs.",
+      "cta": "Start my Estate Plan",
+      "options": {
+        "lastWill": "Last Will",
+        "livingTrust": "Living Trust",
+        "powerOfAttorney": "Power of Attorney"
+      }
+    },
+    "ip": {
+      "title": "For your intellectual property",
+      "description": "Need to trademark your logo, copyright a creative work, or patent an invention? Protect yourself against copycats.",
+      "cta": "View all options",
+      "options": {
+        "trademarks": "Trademarks",
+        "copyrights": "Copyrights",
+        "patents": "Patents"
+      }
+    }
+  },
+  "attorneys": {
+    "title": " your legal power at your fingertips",
+    "description": "In {appname}, we combine deep legal expertise with the latest technologies to deliver advanced solutions. Our smart platform is designed to simplify legal complexities, enhance efficiency, and ensure compliance, all with a single click.",
+    "buttons": {
+      "getLegalHelp": "Start your legal analysis now",
+ 
+      "scheduleCall": "Discover compliance solutions and connect",
+      "attorneyDirectory": "Explore AI compliance solutions"
+    }
+  },
+  "whyChoose": {
+    "title": "Why choose us",
+    "features": {
+      "rightByYou": {
+        "title": "We do right by you",
+        "description": "We will refund our fee within the first 60 days if you're unhappy with our service for any reason."
+      },
+      "all50States": {
+        "title": "We've got you covered in all 50 states",
+        "description": "Have peace of mind knowing our docs have been legally recognized in every state—and yours never need to worry about it."
+      },
+      "flatRate": {
+        "title": "Flat-rate fees",
+        "description": "No hourly charges, no surprises, family."
+      },
+      "inCollaborationWith": {
+        "title": "Integrated with Trusted Government Platforms"
+      }
+    }
+  },
+  "highlights": {
+    "title": "{appname} by numbers: expertise, achievements, and reliability.",
+    "stats": {
+      "estatePlanning": {
+        "number": "Leading expertise in the legal field",
+        "label": "Estate Planning Document",
+        "description": "Since 2001, we offer innovative legal solutions and reliable consulting services, making us a cornerstone in the industry."
+      },
+      "businesses": {
+        "number": "Legal and organized document",
+        "label": "Business",
+        "description": "Protecting customer rights and legally planning their future. From contracts to documents, we ensure safety, compliance, and efficiency"
+      },
+      "experience": {
+        "number": "20+ years",
+        "label": "Industry leadership",
+        "description": "Providing customers with reliable legal assistance and affordable rates since 2001."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "What our customers are saying",
+    "reviews": {
+      "karen": {
+        "text": "\"Legatoo's legal services have been exceptional for our business. Their expertise in Saudi law and professional approach made our contract management seamless and efficient.\"",
+        "author": "—Ahmed Al-Rashid, Business Owner"
+      },
+      "derek": {
+        "text": "\"The team at Legatoo provided outstanding legal support for our company. Their attention to detail and understanding of local regulations exceeded our expectations.\"",
+        "author": "—Fatima Al-Zahra, Corporate Client"
+      },
+      "sara": {
+        "text": "\"Working with Legatoo has been a game-changer for our legal processes. Their comprehensive contract management system saved us time and ensured compliance.\"",
+        "author": "—Mohammed Al-Sheikh, Legal Director"
+      }
+    }
+  },
+  "newsletter": {
+    "title": "Get helpful tips and info from our newsletter!",
+    "placeholder": "name@email.com",
+    "cta": "Sign up"
+  }
+}

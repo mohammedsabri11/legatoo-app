@@ -1,0 +1,148 @@
+{
+  "title": "Subscription Plans",
+  "subtitle": "Choose the plan that fits your legal needs",
+  "plans": {
+    "freeTrial": {
+      "name": "Free Trial",
+      "description": "Short trial period (7-14 days) for new users",
+      "price": "Free",
+      "period": "7-14 days",
+      "features": {
+        "title": "Features",
+        "items": {
+          "0": "Limited access to basic features (file upload, basic AI Chat)",
+          "1": "Basic status reports",
+          "2": "Limited contract library"
+        }
+      },
+      "limitations": {
+        "title": "Limitations",
+        "items": {
+          "0": "5 files per day",
+          "1": "20 AI messages",
+          "2": "No PDF/Excel export"
+        }
+      },
+      "cta": "Start Now"
+    },
+    "monthly": {
+      "name": "Monthly Subscription",
+      "description": "Monthly subscription",
+      "price": "99 SAR",
+      "period": "Monthly",
+      "features": {
+        "title": "Features",
+        "items": {
+          "0": "Full access to all features",
+          "1": "Advanced compliance and risk reports",
+          "2": "Nearly unlimited AI Chat",
+          "3": "Unlimited contract generation"
+        }
+      },
+      "limitations": {
+        "title": "Limitations",
+        "items": {
+          "0": "50 files/month",
+          "1": "50,000 tokens/month"
+        }
+      },
+      "cta": "Subscribe Now"
+    },
+    "annual": {
+      "name": "Annual Subscription",
+      "description": "Annual subscription",
+      "price": "999 SAR",
+      "period": "Annually",
+      "features": {
+        "title": "Features",
+        "items": {
+          "0": "All monthly features + annual discount",
+          "1": "Advanced reports and analytics",
+          "2": "Multi-user / Teams support"
+        }
+      },
+      "limitations": {
+        "title": "Limitations",
+        "items": {
+          "0": "600,000 tokens/year",
+          "1": "Nearly unlimited file upload and analysis"
+        }
+      },
+      "cta": "Save with Annual Plan"
+    }
+  },
+  "comparison": {
+    "title": "Comparison Table",
+    "subtitle": "Compare different plans and choose the best one for you",
+    "features": {
+      "fileUpload": "File Upload & Analysis",
+      "aiChat": "AI Chat Messages",
+      "contractGeneration": "Contract Generation",
+      "reportsExport": "Reports Export",
+      "multiUser": "Multi-user / Teams",
+      "governmentIntegrations": "Government Integrations"
+    },
+    "plans": {
+      "free": "Free",
+      "monthly": "Monthly",
+      "annual": "Annual"
+    },
+    "notes": "Notes",
+    "table": {
+      "fileUpload": {
+        "free": "5 files/day",
+        "monthly": "50 files/month",
+        "annual": "600 files/year",
+        "note": "Limited OCR and NER support in Free"
+      },
+      "aiChat": {
+        "free": "20",
+        "monthly": "500/month",
+        "annual": "6000/year",
+        "note": "Tokens defined per message"
+      },
+      "contractGeneration": {
+        "free": "3/day",
+        "monthly": "50/month",
+        "annual": "600/year",
+        "note": "Depends on Templates"
+      },
+      "reportsExport": {
+        "free": "Disabled",
+        "monthly": "10/month",
+        "annual": "Unlimited",
+        "note": ""
+      },
+      "multiUser": {
+        "free": "No",
+        "monthly": "Up to 5 users",
+        "annual": "Up to 50 users",
+        "note": ""
+      },
+      "governmentIntegrations": {
+        "free": "Limited",
+        "monthly": "Full Access",
+        "annual": "Full Access",
+        "note": ""
+      }
+    }
+  },
+  "technicalMechanisms": {
+    "title": "Technical Mechanisms for Consumption Control",
+    "subtitle": "Advanced system for monitoring and managing resource consumption",
+    "mechanisms": [
+      {
+        "title": "Token Tracking",
+        "description": "The system records consumed tokens and shows notifications when approaching limits."
+      },
+      {
+        "title": "Rate Limiting",
+        "description": "Free Trial prevents exceeding limits, Paid Plans can be upgraded with additional packages."
+      },
+      {
+        "title": "Monitoring & Alerts",
+        "description": "Alerts at 80% and 100% consumption with upgrade options."
+      }
+    ]
+  }
+}

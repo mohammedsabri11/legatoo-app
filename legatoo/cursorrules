@@ -1,0 +1,10 @@
+# rules for localization in this project 
+- Each module/page must keep its own translation file inside its folder.  
+- Do not add or edit keys in other modules’ translation files.  
+- Use common.json only for global/shared keys.  
+- Keys must follow hierarchical naming: {module}.{section}.{element}.  
+- Avoid generic keys (e.g., "status"); always namespace unless global.  
+- Add new keys without rewriting or reformatting the entire JSON file.  
+- Always keep JSON valid, clean, and ordered (alphabetical or logical).
+- for styling purpuse you must only use tailwind css not any other ui library
+- create a folder about docs and always create any .md file in it not in the root

@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "title": "Business Startup: Start Your Business with Confidence and Success",
+    "description": "With {appname}, turn your idea into a fully-fledged legal entity. We simplify the process of establishing your company, from choosing a legal form to obtaining licenses, so you can begin your entrepreneurial journey without complications.",
+    "buttons": {
+      "startBuilding": "Start building your business now",
+      "bookConsultation": "Book a free consultation"
+    }
+  },
+  "services": {
+    "title": "Complete Company Establishment Services",
+    "description": "From legal structure selection to license acquisition, we handle every step of your business formation process.",
+    "items": {
+      "legalStructure": {
+        "title": "Legal Structure Selection",
+        "description": "Choose the right business entity type (LLC, Corporation, Partnership) based on your specific needs and goals."
+      },
+      "documentPreparation": {
+        "title": "Document Preparation",
+        "description": "We prepare all necessary legal documents including articles of incorporation, operating agreements, and bylaws."
+      },
+      "licenseAcquisition": {
+        "title": "License & Permit Acquisition",
+        "description": "Obtain all required business licenses, permits, and registrations to operate legally in your jurisdiction."
+      }
+    }
+  },
+  "process": {
+    "title": "Our Simple 4-Step Process",
+    "description": "Get your business up and running in just a few simple steps",
+    "steps": {
+      "consultation": {
+        "step": "01",
+        "title": "Consultation",
+        "description": "Discuss your business goals and requirements"
+      },
+      "structureSelection": {
+        "step": "02",
+        "title": "Structure Selection",
+        "description": "Choose the optimal legal structure for your business"
+      },
+      "documentPreparation": {
+        "step": "03",
+        "title": "Document Preparation",
+        "description": "We prepare all necessary legal documents"
+      },
+      "registration": {
+        "step": "04",
+        "title": "Registration",
+        "description": "Submit and complete all registrations and filings"
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to Start Your Business Journey?",
+    "description": "Let our experts guide you through the entire company establishment process. Get started today!",
+    "buttons": {
+      "startNow": "Start Your Business Now",
+      "scheduleConsultation": "Schedule Free Consultation"
+    }
+  }
+}
