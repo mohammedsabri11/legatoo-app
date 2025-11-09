@@ -47,16 +47,7 @@ export function ContractContent({ content, className, locale }: ContractContentP
         "li",
         "span",
       ],
-      ALLOWED_ATTR: {
-        p: ["dir"],
-        h1: ["dir"],
-        h2: ["dir"],
-        h3: ["dir"],
-        h4: ["dir"],
-        h5: ["dir"],
-        h6: ["dir"],
-        span: ["class"],
-      },
+      ALLOWED_ATTR: ["dir", "class"],
     }) as string;
   }, [content]);
 
