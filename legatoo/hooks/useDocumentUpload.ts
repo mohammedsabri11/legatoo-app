@@ -185,7 +185,7 @@ export function useDocuments(params?: DocumentsQueryParams) {
       }
       return undefined;
     },
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
 }
 
