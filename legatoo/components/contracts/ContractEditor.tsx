@@ -1,9 +1,23 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import DOMPurify from "dompurify";
 import { useTranslation } from "@/hooks/useTranslation";
+import { normalizeContractContent } from "@/utils/contractFormatting";
+
+const RTL_LOCALE_PREFIXES = [
+  "ar",
+  "fa",
+  "he",
+  "ku",
+  "ps",
+  "ur",
+  "sd",
+  "dv",
+];
+const RTL_CHAR_PATTERN = /[\u0590-\u08FF]/;
 
 interface ContractEditorProps {
   content: string;
@@ -17,45 +31,124 @@ export function ContractEditor({
   onSave,
 }: ContractEditorProps) {
   const { t, locale } = useTranslation();
-  const isRTL = locale === 'ar';
+  const normalizedLocale = (locale ?? "").toLowerCase();
+  const localeIsRTL = RTL_LOCALE_PREFIXES.some((prefix) =>
+    normalizedLocale.startsWith(prefix)
+  );
+  const localeIsRTLRef = useRef(localeIsRTL);
+
+  const containsRtlChars = (value: string): boolean => {
+    const text = value.replace(/<[^>]*>/g, " ");
+    return RTL_CHAR_PATTERN.test(text);
+  };
+
+  const initialIsRTL = localeIsRTL || containsRtlChars(initialContent);
+  const [isRTL, setIsRTL] = useState<boolean>(initialIsRTL);
+  const isRTLRef = useRef<boolean>(initialIsRTL);
+
   const idleSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isInitialMountRef = useRef(true);
-  const contentRef = useRef<string>(initialContent);
+  const sanitizeHtml = (value: string): string =>
+    DOMPurify.sanitize(value, {
+      USE_PROFILES: { html: true },
+      ALLOWED_TAGS: [
+        "p",
+        "br",
+        "strong",
+        "b",
+        "em",
+        "i",
+        "u",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "ul",
+        "ol",
+        "li",
+        "span",
+      ],
+      ALLOWED_ATTR: {
+        p: ["dir"],
+        h1: ["dir"],
+        h2: ["dir"],
+        h3: ["dir"],
+        h4: ["dir"],
+        h5: ["dir"],
+        h6: ["dir"],
+        span: ["class"],
+      },
+    }) as string;
+
+  const initialHtml = useMemo(
+    () => sanitizeHtml(normalizeContractContent(initialContent)),
+    [initialContent]
+  );
+
+  const contentRef = useRef<string>(initialHtml);
+  const updateRtlDirection = (textSample: string) => {
+    const shouldUseRTL =
+      localeIsRTLRef.current || containsRtlChars(textSample);
+    if (shouldUseRTL !== isRTLRef.current) {
+      isRTLRef.current = shouldUseRTL;
+      setIsRTL(shouldUseRTL);
+    }
+  };
+
+  useEffect(() => {
+    localeIsRTLRef.current = localeIsRTL;
+  }, [localeIsRTL]);
+
+  useEffect(() => {
+    updateRtlDirection(initialContent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localeIsRTL, initialContent]);
+
+  useEffect(() => {
+    isRTLRef.current = isRTL;
+  }, [isRTL]);
   
   // Save after 5 minutes of inactivity (no typing)
   const IDLE_SAVE_DELAY = 5 * 60 * 1000; // 5 minutes in milliseconds
 
+  useEffect(() => {
+    contentRef.current = initialHtml;
+  }, [initialHtml]);
+
   // Create TipTap editor instance
   const editor = useEditor({
     extensions: [StarterKit],
-    content: initialContent,
+    content: initialHtml,
     immediatelyRender: false, // Fix SSR hydration issues in Next.js
     editable: true,
     editorProps: {
       attributes: {
         class: 'contract-editor-content',
         dir: isRTL ? 'rtl' : 'ltr',
-        style: isRTL ? 'font-family: var(--font-cairo), "Cairo", "Arial", sans-serif;' : 'font-family: "Arial", sans-serif;',
+        style: isRTL
+          ? 'font-family: var(--font-cairo), "Cairo", "Arial", sans-serif; text-align: right; direction: rtl; line-height: 1.8; font-size: 16px;'
+          : 'font-family: "Arial", sans-serif; text-align: left; direction: ltr; line-height: 1.8; font-size: 16px;',
       },
       handleDOMEvents: {
         // Allow normal text selection behavior
-        mousedown: (view, event) => {
-          // Don't prevent default - allow normal selection
-          return false;
-        },
-        click: (view, event) => {
-          // Allow normal click behavior for selection
-          return false;
-        },
+        mousedown: (_view, _event) => false,
+        click: (_view, _event) => false,
       },
     },
     onUpdate: ({ editor }) => {
-      // Get plain text content (or HTML if needed)
-      const newContent = editor.getText();
-      contentRef.current = newContent;
+      const newHtml = sanitizeHtml(editor.getHTML());
+      contentRef.current = newHtml;
+
+      const textSample = editor.getText();
+      updateRtlDirection(textSample);
+
+      if (onChange) {
+        onChange(newHtml);
+      }
 
       // Reset idle save timer - save after 5 minutes of inactivity
-      // No onChange calls here to prevent refreshes - only save after 5 min idle or manual save
       if (onSave) {
         // Clear existing timer
         if (idleSaveTimeoutRef.current) {
@@ -65,7 +158,7 @@ export function ContractEditor({
         // Set new timer - save after 5 minutes of no typing
         idleSaveTimeoutRef.current = setTimeout(() => {
           if (onSave) {
-            onSave(newContent);
+            onSave(newHtml);
           }
         }, IDLE_SAVE_DELAY);
       }
@@ -78,28 +171,33 @@ export function ContractEditor({
 
     if (isInitialMountRef.current) {
       isInitialMountRef.current = false;
-      if (initialContent !== editor.getText()) {
-        editor.commands.setContent(initialContent);
+      if (initialHtml !== editor.getHTML()) {
+        editor.commands.setContent(initialHtml, false, { preserveWhitespace: false });
       }
       return;
     }
 
     // Only update if content changed externally (not from user typing)
-    const currentContent = editor.getText();
-    if (initialContent !== currentContent && initialContent !== undefined) {
-      editor.commands.setContent(initialContent);
+    const currentContent = editor.getHTML();
+    if (initialHtml !== currentContent) {
+      editor.commands.setContent(initialHtml, false, { preserveWhitespace: false });
     }
-  }, [initialContent, editor]);
+  }, [initialHtml, editor]);
 
   // Update RTL direction when locale changes
   useEffect(() => {
     if (!editor) return;
     editor.view.dom.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+    editor.view.dom.style.direction = isRTL ? 'rtl' : 'ltr';
+    editor.view.dom.style.textAlign = isRTL ? 'right' : 'left';
+    editor.view.dom.style.fontFamily = isRTL
+      ? 'var(--font-cairo), "Cairo", "Arial", sans-serif'
+      : '"Arial", sans-serif';
   }, [isRTL, editor]);
 
   const handleSave = () => {
     if (!editor) return;
-    const contentToSave = editor.getText();
+    const contentToSave = sanitizeHtml(editor.getHTML());
     contentRef.current = contentToSave;
 
     // Clear idle save timer since we're saving manually

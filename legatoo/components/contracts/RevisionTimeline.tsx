@@ -3,6 +3,7 @@
 import { Revision } from "@/lib/api/contracts";
 import { GitBranch, Clock } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { extractPlainText } from "@/utils/contractFormatting";
 // Using native date formatting
 
 interface RevisionTimelineProps {
@@ -50,7 +51,9 @@ export function RevisionTimeline({ revisions }: RevisionTimelineProps) {
                     </div>
                     {revision.updated_content && (
                       <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-3 rounded max-h-32 overflow-y-auto">
-                        <p className="line-clamp-3">{revision.updated_content}</p>
+                        <p className="line-clamp-3">
+                          {extractPlainText(revision.updated_content)}
+                        </p>
                       </div>
                     )}
                   </div>

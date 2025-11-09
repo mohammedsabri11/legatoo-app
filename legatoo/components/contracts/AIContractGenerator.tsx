@@ -6,6 +6,7 @@ import { useGenerateContract, useSaveAIContract } from "@/hooks/contracts";
 import { AIGenerateRequest } from "@/lib/api/contracts";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ContractEditor } from "./ContractEditor";
+import { normalizeContractContent } from "@/utils/contractFormatting";
 
 interface AIContractGeneratorProps {
   onSave?: (requestId: string) => void;
@@ -34,8 +35,10 @@ export function AIContractGenerator({ onSave }: AIContractGeneratorProps) {
 
     try {
       const result = await generateMutation.mutateAsync(request);
-      setGeneratedContent(result.generated_content);
+      const normalized = normalizeContractContent(result.generated_content);
+      setGeneratedContent(normalized);
       setRequestId(result.request_id);
+      latestContentRef.current = normalized;
     } catch (error) {
       console.error("Generation error:", error);
     }

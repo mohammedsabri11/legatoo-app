@@ -10,7 +10,7 @@ import {
 } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { authUtils } from "@/lib/auth-utils";
+import { authUtils, getDefaultRouteForRole } from "@/lib/auth-utils";
 
 // Query keys
 export const authKeys = {
@@ -83,7 +83,10 @@ export function useLogin() {
 
         // Redirect after login - using replace to avoid back button issues
         const urlParams = new URLSearchParams(window.location.search);
-        const redirectTo = urlParams.get("redirect") || "/dashboard";
+        const defaultRoute = getDefaultRouteForRole(
+          (user.role as "super_admin" | "admin" | "user") || "user"
+        );
+        const redirectTo = urlParams.get("redirect") || defaultRoute;
 
         // Use window.location for immediate redirect
         window.location.href = redirectTo;

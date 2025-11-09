@@ -18,6 +18,7 @@ from ...schemas.contracts_library import (
 )
 from .ai_contract_generator import AIContractGenerator
 from ...config.enhanced_logging import get_logger
+from ...utils.contracts_formatting import normalize_contract_content
 
 logger = get_logger(__name__)
 
@@ -45,6 +46,8 @@ class ContractsLibraryService:
         contract_dict = contract_data.dict()
         contract_dict["created_by"] = user_id
         contract_dict["version"] = 1
+        if contract_dict.get("content"):
+            contract_dict["content"] = normalize_contract_content(contract_dict["content"])
         
         contract = await self.repository.create_contract(contract_dict)
         return ContractResponse.model_validate(contract)
@@ -119,6 +122,7 @@ class ContractsLibraryService:
         # Update contract
         update_dict = update_data.dict(exclude_unset=True)
         if "content" in update_dict and update_dict["content"] != old_content:
+            update_dict["content"] = normalize_contract_content(update_dict["content"])
             # Create revision before updating
             latest_revision = await self.repository.get_latest_revision_number(contract_id)
             await self.repository.create_revision({
@@ -130,6 +134,9 @@ class ContractsLibraryService:
             })
             # Increment version
             update_dict["version"] = old_version + 1
+        elif "content" in update_dict and update_dict["content"] == old_content:
+            # Ensure stored content remains normalized
+            update_dict["content"] = normalize_contract_content(update_dict["content"])
         
         updated_contract = await self.repository.update_contract(contract_id, update_dict)
         if not updated_contract:
@@ -201,7 +208,7 @@ class ContractsLibraryService:
         # Create contract from AI content
         contract_dict = contract_data.dict()
         contract_dict["created_by"] = user_id
-        contract_dict["content"] = ai_request.generated_content
+        contract_dict["content"] = normalize_contract_content(ai_request.generated_content)
         contract_dict["ai_generated"] = True
         contract_dict["version"] = 1
         
@@ -235,10 +242,11 @@ class ContractsLibraryService:
         latest_revision = await self.repository.get_latest_revision_number(contract_id)
         
         # Create revision
+        normalized_content = normalize_contract_content(revision_data.updated_content)
         revision = await self.repository.create_revision({
             "contract_id": contract_id,
             "revision_number": latest_revision + 1,
-            "updated_content": revision_data.updated_content,
+            "updated_content": normalized_content,
             "updated_by": user_id,
             "changes_summary": revision_data.changes_summary
         })
@@ -246,7 +254,7 @@ class ContractsLibraryService:
         # Update contract version
         await self.repository.update_contract(contract_id, {
             "version": latest_revision + 1,
-            "content": revision_data.updated_content
+            "content": normalized_content
         })
         
         return RevisionResponse.model_validate(revision)
@@ -279,6 +287,8 @@ class ContractsLibraryService:
         """Create a new template."""
         template_dict = template_data.dict()
         template_dict["created_by"] = user_id
+        if template_dict.get("content"):
+            template_dict["content"] = normalize_contract_content(template_dict["content"])
         
         template = await self.repository.create_template(template_dict)
         return TemplateResponse.model_validate(template)
@@ -349,6 +359,8 @@ class ContractsLibraryService:
             raise ValueError("Access denied")
         
         update_dict = update_data.dict(exclude_unset=True)
+        if update_dict.get("content"):
+            update_dict["content"] = normalize_contract_content(update_dict["content"])
         updated_template = await self.repository.update_template(template_id, update_dict)
         if not updated_template:
             return None
@@ -387,6 +399,7 @@ class ContractsLibraryService:
             template.content,
             placeholder_data
         )
+        content = normalize_contract_content(content)
         
         # Create contract
         contract = await self.repository.create_contract({

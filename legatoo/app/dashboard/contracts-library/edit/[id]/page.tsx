@@ -4,7 +4,7 @@ import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/dashboard";
 import { useContract, useUpdateContract } from "@/hooks/contracts";
-import { ContractEditor } from "@/components/contracts";
+import { ContractEditor, ContractContent } from "@/components/contracts";
 import { contractsApi } from "@/lib/api/contracts";
 import { ArrowLeft, Save, Download, FileDown } from "lucide-react";
 import { FeedbackModal } from "@/components/ui/feedback-modal";
@@ -23,6 +23,7 @@ export default function EditContractPage({
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<"draft" | "active" | "archived">("draft");
   const [exporting, setExporting] = useState<"pdf" | "docx" | null>(null);
+  const [viewMode, setViewMode] = useState<"edit" | "preview">("edit");
   const { feedbackState, showFeedback, closeFeedback } = useFeedbackModal();
 
   const handleExport = async (format: "pdf" | "docx") => {
@@ -59,16 +60,19 @@ export default function EditContractPage({
     }
   }, [contract]);
 
-  const handleSave = async () => {
+  const handleSave = async (latestContent?: string) => {
     if (!contract) return;
 
     try {
-      // Use the latest content from state (which is updated by onSave callback)
+      const contentToPersist = latestContent ?? content;
+      if (latestContent && latestContent !== content) {
+        setContent(latestContent);
+      }
       await updateMutation.mutateAsync({
         id: contract.id,
         data: {
           title,
-          content, // This will be the latest content from onSave callback
+          content: contentToPersist,
           status,
         },
       });
@@ -131,6 +135,28 @@ export default function EditContractPage({
             <option value="active">Active</option>
             <option value="archived">Archived</option>
           </select>
+          <div className="flex items-center rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
+            <button
+              onClick={() => setViewMode("edit")}
+              className={`px-3 py-2 text-sm font-medium transition ${
+                viewMode === "edit"
+                  ? "bg-primary text-white"
+                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
+            >
+              Editor
+            </button>
+            <button
+              onClick={() => setViewMode("preview")}
+              className={`px-3 py-2 text-sm font-medium transition ${
+                viewMode === "preview"
+                  ? "bg-primary text-white"
+                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
+            >
+              Preview
+            </button>
+          </div>
           <button
             onClick={() => handleExport("pdf")}
             disabled={exporting !== null}
@@ -160,15 +186,24 @@ export default function EditContractPage({
 
       {/* Editor */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-        <ContractEditor
-          content={content}
-          onSave={(savedContent) => {
-            // Update content state with saved content
-            setContent(savedContent);
-            // Then call the save handler which uses the current state
-            handleSave();
-          }}
-        />
+        {viewMode === "edit" ? (
+          <ContractEditor
+            content={content}
+            onChange={(updatedContent) => {
+              setContent(updatedContent);
+            }}
+            onSave={(savedContent) => {
+              setContent(savedContent);
+              handleSave(savedContent);
+            }}
+          />
+        ) : (
+          <ContractContent
+            content={content}
+            locale={contract.language}
+            className="rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900/30 p-6"
+          />
+        )}
       </div>
       </div>
       <FeedbackModal

@@ -258,6 +258,36 @@ export const protectedRoutes = [
   '/dashboard/contracts'
 ]
 
+export type UserRole = 'super_admin' | 'admin' | 'user'
+
+interface RoleProtectedRoute {
+  prefix: string
+  allowedRoles: UserRole[]
+}
+
+const roleProtectedRoutes: RoleProtectedRoute[] = [
+  {
+    prefix: '/dashboard/admin',
+    allowedRoles: ['super_admin'],
+  },
+  {
+    prefix: '/dashboard/subscribers',
+    allowedRoles: ['super_admin'],
+  },
+  {
+    prefix: '/dashboard/plans',
+    allowedRoles: ['super_admin'],
+  },
+  {
+    prefix: '/dashboard',
+    allowedRoles: ['admin', 'user'],
+  },
+]
+
+const sortedRoleProtectedRoutes = roleProtectedRoutes.sort(
+  (a, b) => b.prefix.length - a.prefix.length
+)
+
 // Public routes that don't require authentication
 export const publicRoutes = [
   '/',
@@ -270,6 +300,26 @@ export const publicRoutes = [
 // Check if a route is protected
 export const isProtectedRoute = (pathname: string): boolean => {
   return protectedRoutes.some(route => pathname.startsWith(route))
+}
+
+export const getAllowedRolesForRoute = (
+  pathname: string
+): UserRole[] | null => {
+  const match = sortedRoleProtectedRoutes.find(route =>
+    pathname.startsWith(route.prefix)
+  )
+  return match ? match.allowedRoles : null
+}
+
+export const getDefaultRouteForRole = (role: UserRole): string => {
+  switch (role) {
+    case 'super_admin':
+      return '/dashboard/admin'
+    case 'admin':
+      return '/dashboard'
+    default:
+      return '/dashboard'
+  }
 }
 
 // Check if a route is public

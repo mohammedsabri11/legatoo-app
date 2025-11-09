@@ -3,6 +3,7 @@
 import React from 'react'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { useTranslation } from '@/hooks/useTranslation'
+import { useUser } from '@/hooks/useAuth'
 import { 
   FileText, 
   Users, 
@@ -22,6 +23,30 @@ import {
 export default function DashboardPage() {
   const { locale } = useTranslation();
   const isRTL = locale === 'ar';
+  const user = useUser();
+  const role = user?.role || "user";
+  const isSuperAdmin = role === 'super_admin';
+  const isAdmin = role === 'admin';
+
+  if (!isSuperAdmin && !isAdmin) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center max-w-md space-y-3">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
+            <h2 className="text-xl font-semibold text-gray-900">
+              {isRTL ? 'غير مصرح لك بالوصول' : 'Access Denied'}
+            </h2>
+            <p className="text-gray-600">
+              {isRTL
+                ? 'هذه الصفحة متاحة للمسؤولين فقط. يرجى التواصل مع المشرف إذا كنت تحتاج الوصول.'
+                : 'This page is restricted to administrators. Please contact your administrator if you need access.'}
+            </p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   // Quick Overview (KPIs) - Key Performance Indicators
   const kpiStats = [

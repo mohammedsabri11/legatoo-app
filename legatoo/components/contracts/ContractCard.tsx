@@ -5,6 +5,7 @@ import { Contract } from "@/lib/api/contracts";
 import { StatusBadge } from "./StatusBadge";
 import { FileText, Calendar, Globe, Sparkles } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { extractPlainText } from "@/utils/contractFormatting";
 // Using native date formatting
 
 interface ContractCardProps {
@@ -60,6 +61,12 @@ export function ContractCard({ contract }: ContractCardProps) {
             </span>
           )}
         </div>
+
+        {contract.content && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+            {extractPlainText(contract.content)}
+          </p>
+        )}
       </div>
     </Link>
   );

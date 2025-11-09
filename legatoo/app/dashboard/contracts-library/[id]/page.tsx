@@ -4,7 +4,7 @@ import { use, useState } from "react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/dashboard";
 import { useContract } from "@/hooks/contracts";
-import { StatusBadge } from "@/components/contracts";
+import { StatusBadge, ContractContent } from "@/components/contracts";
 import { contractsApi } from "@/lib/api/contracts";
 import { Edit, History, FileText, Globe, Calendar, Sparkles, ArrowLeft, Download, FileDown } from "lucide-react";
 import { FeedbackModal } from "@/components/ui/feedback-modal";
@@ -189,11 +189,17 @@ export default function ContractDetailsPage({
       {/* Content */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold mb-4">Contract Content</h2>
-        <div className="prose dark:prose-invert max-w-none">
-          <pre className="whitespace-pre-wrap text-sm bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            {contract.content || "No content available"}
-          </pre>
-        </div>
+        {contract.content ? (
+          <ContractContent
+            content={contract.content}
+            locale={contract.language}
+            className="rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900/30 p-6"
+          />
+        ) : (
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            No content available
+          </div>
+        )}
       </div>
       </div>
       <FeedbackModal

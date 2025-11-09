@@ -246,14 +246,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const isAdmin = userRole === "admin";
 
   // Base navigation items (for all users)
-  const baseNavigation = [
-    {
-      name: t("dashboard.navigation.dashboard"),
-      href: "/dashboard",
-      icon: Home,
-      type: "single",
-    },
-  ];
+  const baseNavigation = !isSuperAdmin
+    ? [
+        {
+          name: t("dashboard.navigation.dashboard"),
+          href: "/dashboard",
+          icon: Home,
+          type: "single",
+        },
+      ]
+    : [];
 
   // SuperAdmin sees Admin Dashboard as main item
   const superAdminNavigation = isSuperAdmin

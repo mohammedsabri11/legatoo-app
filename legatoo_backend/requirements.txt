@@ -68,6 +68,7 @@ Pillow==11.1.0
 arabic-reshaper==3.0.0
 python-bidi==0.6.6
 numpy>=1.24.0
+beautifulsoup4>=4.12.3
 
 # Embeddings and Search (Upgraded for Arabic Legal Models)
 transformers>=4.35.0  # Required for Arabic BERT models

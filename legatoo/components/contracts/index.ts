@@ -2,6 +2,7 @@ export * from "./ContractCard";
 export * from "./ContractTable";
 export * from "./ContractEditor";
 export * from "./AIContractGenerator";
+export * from "./ContractContent";
 export * from "./RevisionTimeline";
 export * from "./TemplateCard";
 export * from "./StatusBadge";

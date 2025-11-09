@@ -3,7 +3,13 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useUser } from '@/hooks/useAuth'
-import { isProtectedRoute, isPublicRoute } from '@/lib/auth-utils'
+import {
+  isProtectedRoute,
+  isPublicRoute,
+  getAllowedRolesForRoute,
+  getDefaultRouteForRole,
+  UserRole,
+} from '@/lib/auth-utils'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -37,6 +43,14 @@ export function AuthGuard({ children }: AuthGuardProps) {
           router.push(loginUrl)
           return
         }
+
+        const userRole = (user.role || 'user') as UserRole
+        const allowedRoles = getAllowedRolesForRoute(pathname)
+        if (allowedRoles && !allowedRoles.includes(userRole)) {
+          router.replace(getDefaultRouteForRole(userRole))
+          return
+        }
+
         setIsAuthenticated(true)
       } else if (isAuthRoute) {
         // If accessing auth route with token, redirect to dashboard

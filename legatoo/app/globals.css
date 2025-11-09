@@ -596,6 +596,76 @@ p, span, li, td, th, label {
   color: #1f2937;
 }
 
+.contract-viewer {
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #111827;
+  background-color: transparent;
+  white-space: pre-line;
+}
+
+.contract-viewer-rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.contract-viewer-ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+.dark .contract-viewer {
+  color: #f3f4f6;
+}
+
+.contract-viewer p {
+  margin: 0 0 1.25rem 0;
+  white-space: normal;
+}
+
+.contract-viewer p:last-child {
+  margin-bottom: 0;
+}
+
+.contract-viewer h1,
+.contract-viewer h2,
+.contract-viewer h3,
+.contract-viewer h4,
+.contract-viewer h5,
+.contract-viewer h6 {
+  font-weight: 700;
+  margin: 1.5rem 0 0.75rem;
+  color: inherit;
+}
+
+.contract-viewer h3 {
+  font-size: 20px;
+}
+
+.contract-viewer strong,
+.contract-viewer b {
+  font-weight: 700;
+}
+
+.contract-viewer ul,
+.contract-viewer ol {
+  padding-inline-start: 1.5rem;
+  margin: 0 0 1.25rem 0;
+}
+
+.contract-viewer li {
+  margin-bottom: 0.5rem;
+}
+
+.contract-viewer li:last-child {
+  margin-bottom: 0;
+}
+
+.contract-viewer br {
+  content: "";
+}
+
 .ProseMirror p {
   margin: 0 0 1rem 0;
   text-align: justify;
