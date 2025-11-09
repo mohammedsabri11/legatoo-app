@@ -33,6 +33,7 @@ jobs:
 
           echo "🔄 Pulling latest code..."
           cd ~
+         
           git pull origin main
 
           echo "🌀 Updating backend..."
