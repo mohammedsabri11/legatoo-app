@@ -33,7 +33,7 @@ jobs:
 
           echo "🔄 Pulling latest code..."
           cd ~
-         
+          git stash save "Stash before pull"
           git pull origin main
 
           echo "🌀 Updating backend..."
