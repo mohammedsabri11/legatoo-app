@@ -163,7 +163,7 @@ export function ContractEditor({
     if (isInitialMountRef.current) {
       isInitialMountRef.current = false;
       if (initialHtml !== editor.getHTML()) {
-        editor.commands.setContent(initialHtml, false, { preserveWhitespace: false });
+        editor.commands.setContent(initialHtml, { emitUpdate: false });
       }
       return;
     }
@@ -171,7 +171,7 @@ export function ContractEditor({
     // Only update if content changed externally (not from user typing)
     const currentContent = editor.getHTML();
     if (initialHtml !== currentContent) {
-      editor.commands.setContent(initialHtml, false, { preserveWhitespace: false });
+      editor.commands.setContent(initialHtml, { emitUpdate: false });
     }
   }, [initialHtml, editor]);
 
