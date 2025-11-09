@@ -7,7 +7,6 @@ import { useUser } from "@/hooks/useAuth";
 import { useDocuments, useStartTraining } from "@/hooks/useDocumentUpload";
 import type {
   DocumentsQueryParams,
-  KnowledgeDocumentListData,
   KnowledgeDocumentSummary,
 } from "@/lib/api/auth";
 import {
@@ -394,7 +393,7 @@ export default function AdminDocumentsPage() {
   const documentsQuery = useDocuments(queryParams);
   const trainingMutation = useStartTraining();
 
-  const data = documentsQuery.data as KnowledgeDocumentListData | undefined;
+  const data = documentsQuery.data;
   const documents: KnowledgeDocumentSummary[] = data?.documents ?? [];
   const pagination = data?.pagination;
   const metrics = data?.metrics;

@@ -3,6 +3,7 @@ import { authApi } from "@/lib/api/auth";
 import type {
   DocumentsQueryParams,
   KnowledgeDocumentListData,
+  KnowledgeDocumentsResponse,
 } from "@/lib/api/auth";
 import { toast } from "react-hot-toast";
 
@@ -171,7 +172,11 @@ export function useDeleteCase() {
 }
 
 export function useDocuments(params?: DocumentsQueryParams) {
-  return useQuery<KnowledgeDocumentListData | undefined>({
+  return useQuery<
+    KnowledgeDocumentsResponse,
+    Error,
+    KnowledgeDocumentListData | undefined
+  >({
     queryKey: ["documents", params],
     queryFn: () => authApi.getDocuments(params ?? {}),
     select: (response) => {
