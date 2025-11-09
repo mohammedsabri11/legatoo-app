@@ -174,7 +174,9 @@ export default function EditContractPage({
             {exporting === "docx" ? "Exporting..." : "Word"}
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => {
+              void handleSave();
+            }}
             disabled={updateMutation.isPending}
             className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg disabled:opacity-50"
           >
