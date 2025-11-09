@@ -313,7 +313,7 @@ export default function SubscribersPage() {
                             </p>
                           </div>
                         )}
-                        {"account_type" in detailData && detailData.account_type && (
+                        {detailData.account_type && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">
                               {isRTL ? "نوع الحساب" : "Account Type"}
