@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useAuth";
 import { useSubscribers, useSubscriber } from "@/hooks/useSubscribers";
-import type { Subscriber } from "@/lib/api/subscribers";
+import type { Subscriber, SubscriberDetail } from "@/lib/api/subscribers";
 import {
   Mail,
   Phone,
@@ -23,6 +23,9 @@ export default function SubscribersPage() {
   const isRTL = locale === "ar";
   const user = useUser();
   const isAdmin = user?.role === "super_admin";
+  const isSubscriberDetail = (
+    data: Subscriber | SubscriberDetail | null
+  ): data is SubscriberDetail => !!data && typeof (data as SubscriberDetail).account_type !== "undefined";
   
   const [selectedSubscriberId, setSelectedSubscriberId] = useState<string | null>(null);
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
@@ -313,7 +316,7 @@ export default function SubscribersPage() {
                             </p>
                           </div>
                         )}
-                        {detailData.account_type && (
+                        {isSubscriberDetail(detailData) && detailData.account_type && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">
                               {isRTL ? "نوع الحساب" : "Account Type"}
