@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/lib/api/auth";
+import type {
+  DocumentsQueryParams,
+  KnowledgeDocumentListData,
+} from "@/lib/api/auth";
 import { toast } from "react-hot-toast";
 
 export const documentKeys = {
@@ -166,16 +170,17 @@ export function useDeleteCase() {
   });
 }
 
-export function useDocuments() {
-  return useQuery({
-    queryKey: ["documents"],
-    queryFn: () => authApi.getDocuments(),
+export function useDocuments(params?: DocumentsQueryParams) {
+  return useQuery<KnowledgeDocumentListData | undefined>({
+    queryKey: ["documents", params],
+    queryFn: () => authApi.getDocuments(params ?? {}),
     select: (response) => {
       if (response.success && response.data) {
-        return response.data.documents;
+        return response.data;
       }
-      return [];
+      return undefined;
     },
+    keepPreviousData: true,
   });
 }
 

@@ -590,25 +590,50 @@ class KnowledgeDocumentRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_documents(
+    def _build_document_filters(
         self,
-        skip: int = 0,
-        limit: int = 100,
         category: Optional[str] = None,
         status: Optional[str] = None,
-        uploaded_by: Optional[int] = None
-    ) -> Tuple[List[KnowledgeDocument], int]:
-        """Get knowledge documents with filtering and pagination."""
-        query = select(KnowledgeDocument)
-        count_query = select(func.count()).select_from(KnowledgeDocument)
-        
-        filters = []
+        uploaded_by: Optional[int] = None,
+        search: Optional[str] = None,
+    ) -> List[Any]:
+        """Build reusable filter expressions for knowledge documents."""
+        filters: List[Any] = []
         if category:
             filters.append(KnowledgeDocument.category == category)
         if status:
             filters.append(KnowledgeDocument.status == status)
         if uploaded_by:
             filters.append(KnowledgeDocument.uploaded_by == uploaded_by)
+        if search:
+            pattern = f"%{search.lower()}%"
+            filters.append(
+                or_(
+                    func.lower(KnowledgeDocument.title).like(pattern),
+                    func.lower(KnowledgeDocument.file_path).like(pattern),
+                )
+            )
+        return filters
+
+    async def get_documents(
+        self,
+        skip: int = 0,
+        limit: int = 100,
+        category: Optional[str] = None,
+        status: Optional[str] = None,
+        uploaded_by: Optional[int] = None,
+        search: Optional[str] = None,
+    ) -> Tuple[List[KnowledgeDocument], int]:
+        """Get knowledge documents with filtering and pagination."""
+        filters = self._build_document_filters(
+            category=category,
+            status=status,
+            uploaded_by=uploaded_by,
+            search=search,
+        )
+        
+        query = select(KnowledgeDocument)
+        count_query = select(func.count()).select_from(KnowledgeDocument)
         
         if filters:
             query = query.where(and_(*filters))
@@ -619,11 +644,67 @@ class KnowledgeDocumentRepository:
         total = total_result.scalar_one()
         
         # Get documents with pagination
-        query = query.order_by(desc(KnowledgeDocument.uploaded_at)).offset(skip).limit(limit)
+        query = query.order_by(desc(KnowledgeDocument.uploaded_at))
+        if limit:
+            query = query.offset(skip).limit(limit)
         result = await self.db.execute(query)
         documents = result.scalars().all()
         
         return documents, total
+
+    async def get_document_status_counts(
+        self,
+        category: Optional[str] = None,
+        status: Optional[str] = None,
+        uploaded_by: Optional[int] = None,
+        search: Optional[str] = None,
+    ) -> Dict[str, int]:
+        """Return counts of documents grouped by status."""
+        filters = self._build_document_filters(
+            category=category,
+            status=status,
+            uploaded_by=uploaded_by,
+            search=search,
+        )
+        
+        query = (
+            select(KnowledgeDocument.status, func.count().label("count"))
+            .select_from(KnowledgeDocument)
+        )
+        if filters:
+            query = query.where(and_(*filters))
+        query = query.group_by(KnowledgeDocument.status)
+        
+        result = await self.db.execute(query)
+        rows = result.all()
+        return {row.status or "unknown": row.count for row in rows}
+
+    async def get_document_category_counts(
+        self,
+        category: Optional[str] = None,
+        status: Optional[str] = None,
+        uploaded_by: Optional[int] = None,
+        search: Optional[str] = None,
+    ) -> Dict[str, int]:
+        """Return counts of documents grouped by category."""
+        filters = self._build_document_filters(
+            category=category,
+            status=status,
+            uploaded_by=uploaded_by,
+            search=search,
+        )
+        
+        query = (
+            select(KnowledgeDocument.category, func.count().label("count"))
+            .select_from(KnowledgeDocument)
+        )
+        if filters:
+            query = query.where(and_(*filters))
+        query = query.group_by(KnowledgeDocument.category)
+        
+        result = await self.db.execute(query)
+        rows = result.all()
+        return {row.category or "uncategorized": row.count for row in rows}
 
     async def update_document_status(
         self,

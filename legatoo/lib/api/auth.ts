@@ -77,6 +77,77 @@ export interface RefreshTokenResponse {
 // ok 
 // thebase 
 
+export interface DocumentsQueryParams {
+  page?: number;
+  page_size?: number;
+  category?: string;
+  status?: string;
+  uploaded_by?: number;
+  search?: string;
+}
+
+export interface KnowledgeDocumentUserSummary {
+  id: number;
+  email: string;
+  role: string;
+}
+
+export interface KnowledgeDocumentAnalysis {
+  confidence?: number;
+  keyPoints?: string[];
+  contractType?: string;
+  [key: string]: unknown;
+}
+
+export interface KnowledgeDocumentSummary {
+  id: number;
+  title: string;
+  original_filename: string;
+  category: string;
+  status: string;
+  status_normalized: string;
+  source_type: string;
+  file_path: string | null;
+  file_extension: string | null;
+  file_type?: string | null;
+  file_size_bytes?: number | null;
+  file_size_mb?: number | null;
+  tags: string[];
+  analysis?: KnowledgeDocumentAnalysis | null;
+  metadata: Record<string, unknown>;
+  chunks_count: number;
+  uploaded_by?: number | null;
+  uploaded_by_user?: KnowledgeDocumentUserSummary | null;
+  uploaded_at?: string | null;
+  processed_at?: string | null;
+}
+
+export interface KnowledgeDocumentMetrics {
+  total_documents: number;
+  status_counts: Record<string, number>;
+  category_counts: Record<string, number>;
+}
+
+export interface KnowledgeDocumentPagination {
+  page: number;
+  page_size: number;
+  total: number;
+  total_pages: number;
+}
+
+export interface KnowledgeDocumentListData {
+  documents: KnowledgeDocumentSummary[];
+  pagination: KnowledgeDocumentPagination;
+  metrics: KnowledgeDocumentMetrics;
+}
+
+export interface KnowledgeDocumentsResponse {
+  success: boolean;
+  message?: string;
+  data?: KnowledgeDocumentListData;
+  errors?: Record<string, string> | Array<{ field: string | null; message: string }>;
+}
+
 // Base API URL - you can change this to your actual API endpoint
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 
@@ -386,28 +457,28 @@ export const authApi = {
   },
 
   // Get uploaded documents
-  getDocuments: async (): Promise<{
-    success: boolean;
-    message?: string;
-    data?: {
-        documents: Array<{
-          id: number;
-          title: string;
-          document_type: string;
-          language: "en" | "ar";
-          uploaded_by_id: number;
-          created_at: string;
-          processing_status: "pending" | "processing" | "done" | "error";
-          is_processed: boolean;
-          notes: string;
-          file_path: string;
-          chunks_count: number;
-        }>;
-    };
-    errors?: Record<string, string>;
-  }> => {
+  getDocuments: async (params: DocumentsQueryParams = {}): Promise<KnowledgeDocumentsResponse> => {
     const token = await getValidToken();
-    return apiCall("/legal-cases/", {
+    
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.page_size) queryParams.append("page_size", params.page_size.toString());
+    if (params.category) queryParams.append("category", params.category);
+    if (params.status) queryParams.append("status", params.status);
+    if (typeof params.uploaded_by === "number") {
+      queryParams.append("uploaded_by", params.uploaded_by.toString());
+    }
+    if (params.search) {
+      const trimmedSearch = params.search.trim();
+      if (trimmedSearch) {
+        queryParams.append("search", trimmedSearch);
+      }
+    }
+
+    const queryString = queryParams.toString();
+    const endpoint = queryString ? `/documents?${queryString}` : "/documents";
+
+    return apiCall<KnowledgeDocumentsResponse>(endpoint, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,

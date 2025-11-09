@@ -37,6 +37,7 @@ from .routes.support_router import router as support_router
 from .routes.templates_router import router as templates_router
 from .routes.analytics_router import router as analytics_router
 from .routes.contracts_library_router import router as contracts_library_router
+from .routes.knowledge_documents_router import router as knowledge_documents_router
 #from .routes.rag_router import router as rag_router
 from pydantic import BaseModel
 from typing import List
@@ -348,6 +349,7 @@ app.include_router(support_router, prefix="/api/v1")  # Support Tickets Manageme
 app.include_router(templates_router)  # Contract Templates Management
 app.include_router(contracts_library_router, prefix="/api/v1")  # Contracts Library (Enhanced)
 app.include_router(analytics_router)  # Admin Analytics
+app.include_router(knowledge_documents_router)  # Knowledge Documents Management
 #app.include_router(rag_router)  # RAG Management
 @app.on_event("startup")
 async def startup_event():
