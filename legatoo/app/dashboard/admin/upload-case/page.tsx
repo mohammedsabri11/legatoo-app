@@ -26,6 +26,7 @@ import {
   Grid3X3,
   List,
 } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 interface UploadedFile {
   id: string;
@@ -199,28 +200,28 @@ export default function AdminUploadPage() {
 
       // Check file count limit
       if (fileArray.length > maxFiles) {
-        alert(
+        toast.error(
           isRTL
-            ? `يمكن رفع ملف واحد فقط في كل مرة`
-            : `Only one file can be uploaded at a time`
+            ? "يمكن رفع ملف واحد فقط في كل مرة"
+            : "Only one file can be uploaded at a time."
         );
         return;
       }
 
       const validFiles = fileArray.filter((file) => {
         if (file.size > maxSize) {
-          alert(
+          toast.error(
             isRTL
               ? `حجم الملف ${file.name} كبير جداً (الحد الأقصى 10MB)`
-              : `File ${file.name} size too large (max 10MB)`
+              : `File ${file.name} is too large (maximum size is 10MB).`
           );
           return false;
         }
         if (!supportedTypes.includes(file.type)) {
-          alert(
+          toast.error(
             isRTL
               ? `نوع الملف ${file.name} غير مدعوم. يرجى رفع ملف Word فقط (.docx أو .doc)`
-              : `File type ${file.name} not supported. Please upload Word files only (.docx or .doc)`
+              : `File type ${file.name} is not supported. Please upload Word files only (.docx or .doc).`
           );
           return false;
         }

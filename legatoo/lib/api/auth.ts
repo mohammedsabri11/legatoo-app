@@ -148,6 +148,36 @@ async function apiCall<T>(
   }
 }
 
+const AUTH_ERROR = {
+  status: 401,
+  message: "Authentication required. Please login again.",
+  errors: {},
+} as const;
+
+async function getValidToken(): Promise<string> {
+  const hasValidToken = await authUtils.ensureValidToken();
+
+  if (!hasValidToken) {
+    if (typeof window !== "undefined") {
+      authUtils.clearAuth();
+      window.location.href = "/login";
+    }
+    throw { ...AUTH_ERROR };
+  }
+
+  const token = authUtils.getAccessToken();
+
+  if (!token) {
+    if (typeof window !== "undefined") {
+      authUtils.clearAuth();
+      window.location.href = "/login";
+    }
+    throw { ...AUTH_ERROR };
+  }
+
+  return token;
+}
+
 // Authentication API functions
 export const authApi = {
   // Sign up
@@ -221,7 +251,7 @@ export const authApi = {
     };
     message?: string;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall("/profile/me", {
       method: "GET",
       headers: {
@@ -241,7 +271,7 @@ export const authApi = {
     message?: string;
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall("/profile/me", {
       method: "PUT",
       headers: {
@@ -333,7 +363,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     const formData = new FormData();
     
     // Add metadata
@@ -376,7 +406,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall("/legal-cases/", {
       method: "GET",
       headers: {
@@ -396,7 +426,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall("/admin/training/start", {
       method: "POST",
       headers: {
@@ -437,7 +467,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     
     // Build query parameters
     const queryParams = new URLSearchParams();
@@ -470,7 +500,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     
     // Build query parameters for POST request
     const queryParams = new URLSearchParams();
@@ -513,7 +543,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     const formData = new FormData();
     
     // Add metadata
@@ -547,7 +577,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/laws/${lawId}`, {
       method: "DELETE",
       headers: {
@@ -604,7 +634,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/legal-assistant/documents/${documentId}`, {
       method: "GET",
       headers: {
@@ -629,7 +659,7 @@ export const authApi = {
       };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/legal-assistant/documents/${documentId}`, {
       method: "PUT",
       headers: {
@@ -646,7 +676,7 @@ export const authApi = {
     message?: string;
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/legal-cases/${documentId}`, {
       method: "DELETE",
       headers: {
@@ -685,7 +715,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/laws/${lawId}/articles`, {
       method: "GET",
       headers: {
@@ -728,7 +758,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     const formData = new FormData();
     
     formData.append('file', data.file);
@@ -783,7 +813,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     
     // Build query parameters
     const queryParams = new URLSearchParams();
@@ -850,7 +880,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/legal-cases/${caseId}`, {
       method: "GET",
       headers: {
@@ -886,7 +916,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/legal-cases/${caseId}`, {
       method: "PUT",
       headers: {
@@ -902,7 +932,7 @@ export const authApi = {
     message: string;
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/legal-cases/${caseId}`, {
       method: "DELETE",
       headers: {
@@ -922,7 +952,7 @@ export const authApi = {
     };
     errors?: Record<string, string>;
   }> => {
-    const token = authUtils.getAccessToken();
+    const token = await getValidToken();
     return apiCall(`/laws/${documentId}/generate-embeddings`, {
       method: "POST",
       headers: {

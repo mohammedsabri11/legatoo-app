@@ -8,9 +8,12 @@ import { useContracts, useDeleteContract } from "@/hooks/contracts";
 import { ContractTable, ContractCard, SearchBar } from "@/components/contracts";
 import { ContractFilters } from "@/lib/api/contracts";
 import { useTranslation } from "@/hooks/useTranslation";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 export default function ContractsLibraryPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const isRTL = locale === "ar";
   const [viewMode, setViewMode] = useState<"grid" | "table">("table");
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<ContractFilters>({
@@ -21,6 +24,7 @@ export default function ContractsLibraryPage() {
 
   const { data, isLoading, error } = useContracts(filters);
   const deleteMutation = useDeleteContract();
+  const { feedbackState, showFeedback, closeFeedback } = useFeedbackModal();
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
@@ -31,10 +35,22 @@ export default function ContractsLibraryPage() {
     setFilters({ ...filters, [key]: value, page: 1 });
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm(t("contracts.deleteConfirm"))) {
-      await deleteMutation.mutateAsync(id);
-    }
+  const handleDelete = (id: string) => {
+    showFeedback({
+      variant: "info",
+      title: isRTL ? "تأكيد الحذف" : "Delete contract?",
+      message: t("contracts.deleteConfirm") as string,
+      confirmLabel: t("contracts.table.delete") as string,
+      cancelLabel: isRTL ? "إلغاء" : "Cancel",
+      onConfirm: async () => {
+        try {
+          await deleteMutation.mutateAsync(id);
+        } catch (error) {
+          // react-query mutation hook already surfaces a toast; swallow to avoid duplicate modals
+          console.error("Contract delete failed:", error);
+        }
+      },
+    });
   };
 
   const handlePageChange = (page: number) => {
@@ -198,6 +214,17 @@ export default function ContractsLibraryPage() {
         </div>
       )}
       </div>
+      <FeedbackModal
+        isOpen={feedbackState.isOpen}
+        onClose={closeFeedback}
+        title={feedbackState.title}
+        message={feedbackState.message}
+        variant={feedbackState.variant}
+        onConfirm={feedbackState.onConfirm}
+        confirmLabel={feedbackState.confirmLabel}
+        cancelLabel={feedbackState.cancelLabel}
+        isRTL={isRTL}
+      />
     </DashboardLayout>
   );
 }

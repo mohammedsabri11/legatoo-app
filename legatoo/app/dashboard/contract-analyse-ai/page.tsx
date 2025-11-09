@@ -12,6 +12,8 @@ import {
   CheckCircle,
   X,
 } from "lucide-react";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 interface ContractAnalysisResult {
   weak_points: string[];
@@ -26,6 +28,7 @@ export default function ContractAnalyseAIPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<ContractAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { feedbackState, showFeedback, closeFeedback } = useFeedbackModal();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -37,7 +40,11 @@ export default function ContractAnalyseAIPage() {
 
   const handleAnalyzeContract = async () => {
     if (!selectedFile) {
-      alert(isRTL ? "يرجى اختيار ملف العقد" : "Please select a contract file");
+      showFeedback({
+        variant: "error",
+        title: isRTL ? "الملف مطلوب" : "File required",
+        message: isRTL ? "يرجى اختيار ملف العقد" : "Please select a contract file before running analysis.",
+      });
       return;
     }
 
@@ -266,6 +273,17 @@ export default function ContractAnalyseAIPage() {
           </div>
         )}
       </div>
+      <FeedbackModal
+        isOpen={feedbackState.isOpen}
+        onClose={closeFeedback}
+        title={feedbackState.title}
+        message={feedbackState.message}
+        variant={feedbackState.variant}
+        onConfirm={feedbackState.onConfirm}
+        confirmLabel={feedbackState.confirmLabel}
+        cancelLabel={feedbackState.cancelLabel}
+        isRTL={isRTL}
+      />
     </DashboardLayout>
   );
 }

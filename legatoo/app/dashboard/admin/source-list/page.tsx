@@ -205,7 +205,15 @@ export default function AdminSourceListPage() {
         {
           onSuccess: (response) => {
             console.log("Laws upload response:", response);
-            toast.success(response.message || "Laws uploaded successfully!");
+            if (response.success && response.data) {
+              setUploadedFiles((prev) =>
+                prev.map((file) => ({
+                  ...file,
+                  status: "completed" as const,
+                  progress: 100,
+                }))
+              );
+            }
           },
           onError: () => {
             // Update local files to error state
@@ -239,28 +247,28 @@ export default function AdminSourceListPage() {
 
       // Check file count limit
       if (fileArray.length > maxFiles) {
-        alert(
+        toast.error(
           isRTL
             ? `يمكن رفع ${maxFiles} ملفات كحد أقصى`
-            : `Maximum ${maxFiles} files can be uploaded at once`
+            : `You can upload a maximum of ${maxFiles} files at once.`
         );
         return;
       }
 
       const validFiles = fileArray.filter((file) => {
         if (file.size > maxSize) {
-          alert(
+          toast.error(
             isRTL
               ? `حجم الملف ${file.name} كبير جداً (الحد الأقصى 2MB)`
-              : `File ${file.name} size too large (max 2MB)`
+              : `File ${file.name} is too large (maximum size is 2MB).`
           );
           return false;
         }
         if (!supportedTypes.includes(file.type)) {
-          alert(
+          toast.error(
             isRTL
               ? `نوع الملف ${file.name} غير مدعوم`
-              : `File type ${file.name} not supported`
+              : `File type ${file.name} is not supported.`
           );
           return false;
         }

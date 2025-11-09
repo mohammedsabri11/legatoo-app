@@ -7,6 +7,8 @@ import { useContract, useUpdateContract } from "@/hooks/contracts";
 import { ContractEditor } from "@/components/contracts";
 import { contractsApi } from "@/lib/api/contracts";
 import { ArrowLeft, Save, Download, FileDown } from "lucide-react";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 export default function EditContractPage({
   params,
@@ -21,6 +23,7 @@ export default function EditContractPage({
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<"draft" | "active" | "archived">("draft");
   const [exporting, setExporting] = useState<"pdf" | "docx" | null>(null);
+  const { feedbackState, showFeedback, closeFeedback } = useFeedbackModal();
 
   const handleExport = async (format: "pdf" | "docx") => {
     if (!contract) return;
@@ -38,7 +41,11 @@ export default function EditContractPage({
       document.body.removeChild(a);
     } catch (error) {
       console.error("Export error:", error);
-      alert("Failed to export contract. Please try again.");
+      showFeedback({
+        variant: "error",
+        title: "Export failed",
+        message: "Failed to export contract. Please try again.",
+      });
     } finally {
       setExporting(null);
     }
@@ -164,6 +171,16 @@ export default function EditContractPage({
         />
       </div>
       </div>
+      <FeedbackModal
+        isOpen={feedbackState.isOpen}
+        onClose={closeFeedback}
+        title={feedbackState.title}
+        message={feedbackState.message}
+        variant={feedbackState.variant}
+        onConfirm={feedbackState.onConfirm}
+        confirmLabel={feedbackState.confirmLabel}
+        cancelLabel={feedbackState.cancelLabel}
+      />
     </DashboardLayout>
   );
 }

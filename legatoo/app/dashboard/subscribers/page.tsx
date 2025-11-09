@@ -4,27 +4,18 @@ import React, { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/hooks/useAuth";
-import {
-  useSubscribers,
-  useDeleteSubscriber,
-  useSubscriber,
-} from "@/hooks/useSubscribers";
+import { useSubscribers, useSubscriber } from "@/hooks/useSubscribers";
+import type { Subscriber } from "@/lib/api/subscribers";
 import {
   Mail,
   Phone,
-  Calendar,
-  CreditCard,
-  MoreVertical,
   Eye,
-  Edit,
-  Trash2,
   Loader2,
   AlertCircle,
   Search,
   User,
   CheckCircle,
   XCircle,
-  Clock,
 } from "lucide-react";
 
 export default function SubscribersPage() {
@@ -34,12 +25,16 @@ export default function SubscribersPage() {
   const isAdmin = user?.role === "super_admin";
   
   const [selectedSubscriberId, setSelectedSubscriberId] = useState<string | null>(null);
+  const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: subscribers, isLoading, error } = useSubscribers();
-  const { data: subscriberDetail } = useSubscriber(selectedSubscriberId);
-  const deleteMutation = useDeleteSubscriber();
+  const {
+    data: subscriberDetail,
+    isLoading: isSubscriberDetailLoading,
+    isError: isSubscriberDetailError,
+  } = useSubscriber(selectedSubscriberId);
 
   if (!isAdmin) {
     return (
@@ -61,23 +56,11 @@ export default function SubscribersPage() {
     );
   }
 
-  const handleViewDetails = (subscriptionId: string) => {
-    setSelectedSubscriberId(subscriptionId);
+  const handleViewDetails = (subscriber: Subscriber) => {
+    setSelectedSubscriberId(subscriber.subscription_id);
+    setSelectedSubscriber(subscriber);
     setShowDetailsModal(true);
   };
-
-  const handleDelete = async (subscriptionId: string) => {
-    if (
-      window.confirm(
-        isRTL
-          ? "هل أنت متأكد من حذف هذا المشترك؟"
-          : "Are you sure you want to delete this subscriber?"
-      )
-    ) {
-      await deleteMutation.mutateAsync(subscriptionId);
-    }
-  };
-
   const filteredSubscribers = subscribers?.filter((sub) => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
@@ -122,6 +105,8 @@ export default function SubscribersPage() {
       day: "numeric",
     });
   };
+
+  const detailData = subscriberDetail ?? selectedSubscriber ?? null;
 
   return (
     <DashboardLayout>
@@ -242,23 +227,11 @@ export default function SubscribersPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => handleViewDetails(subscriber.subscription_id)}
+                            onClick={() => handleViewDetails(subscriber)}
                             className="text-primary hover:text-primary-dark p-1"
                             title={isRTL ? "عرض التفاصيل" : "View Details"}
                           >
                             <Eye className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(subscriber.subscription_id)}
-                            className="text-red-600 hover:text-red-800 p-1"
-                            title={isRTL ? "حذف" : "Delete"}
-                            disabled={deleteMutation.isPending}
-                          >
-                            {deleteMutation.isPending ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
                           </button>
                         </div>
                       </td>
@@ -271,8 +244,8 @@ export default function SubscribersPage() {
         </div>
 
         {/* Details Modal */}
-        {showDetailsModal && subscriberDetail && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        {showDetailsModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-white/30 backdrop-blur-sm">
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -283,6 +256,7 @@ export default function SubscribersPage() {
                     onClick={() => {
                       setShowDetailsModal(false);
                       setSelectedSubscriberId(null);
+                      setSelectedSubscriber(null);
                     }}
                     className="text-gray-400 hover:text-gray-600"
                   >
@@ -290,125 +264,164 @@ export default function SubscribersPage() {
                   </button>
                 </div>
 
-                <div className="space-y-4">
-                  {/* Personal Information */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {isRTL ? "المعلومات الشخصية" : "Personal Information"}
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "الاسم" : "Name"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900">{subscriberDetail.name}</p>
+                {isSubscriberDetailLoading && !subscriberDetail ? (
+                  <div className="flex items-center justify-center py-12 text-gray-500">
+                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                    {isRTL ? "جاري تحميل التفاصيل..." : "Loading details..."}
+                  </div>
+                ) : (
+                  <>
+                    {isSubscriberDetailError && (
+                      <div className="mb-4 flex items-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                        <AlertCircle className="h-4 w-4 mr-2" />
+                        {isRTL
+                          ? "تعذر تحميل تفاصيل المشترك. يتم عرض البيانات المتاحة."
+                          : "Unable to load full subscriber details. Showing available data instead."}
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "البريد الإلكتروني" : "Email"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900">{subscriberDetail.email}</p>
-                      </div>
-                      {subscriberDetail.phone_number && (
+                    )}
+                    {detailData ? (
+                      <div className="space-y-4">
+                    {/* Personal Information */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {isRTL ? "المعلومات الشخصية" : "Personal Information"}
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="text-sm font-medium text-gray-500">
-                            {isRTL ? "رقم الهاتف" : "Phone"}
+                            {isRTL ? "الاسم" : "Name"}
                           </label>
-                          <p className="mt-1 text-sm text-gray-900">{subscriberDetail.phone_number}</p>
-                        </div>
-                      )}
-                      {subscriberDetail.account_type && (
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            {isRTL ? "نوع الحساب" : "Account Type"}
-                          </label>
-                          <p className="mt-1 text-sm text-gray-900 capitalize">
-                            {subscriberDetail.account_type}
+                          <p className="mt-1 text-sm text-gray-900">
+                            {detailData?.name || "-"}
                           </p>
                         </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Subscription Information */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {isRTL ? "معلومات الاشتراك" : "Subscription Information"}
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "الخطة" : "Plan"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900">{subscriberDetail.plan_name}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "نوع الخطة" : "Plan Type"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900 capitalize">
-                          {subscriberDetail.plan_type}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "السعر" : "Price"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900">
-                          {subscriberDetail.price} {isRTL ? "ريال" : "SAR"}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "دورة الفوترة" : "Billing Cycle"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900 capitalize">
-                          {subscriberDetail.billing_cycle || "-"}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "تاريخ البدء" : "Start Date"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900">
-                          {formatDate(subscriberDetail.start_date)}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "تاريخ الانتهاء" : "End Date"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900">
-                          {formatDate(subscriberDetail.end_date || null)}
-                        </p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "الحالة" : "Status"}
-                        </label>
-                        <div className="mt-1">
-                          {getStatusBadge(subscriberDetail.status, subscriberDetail.is_active)}
-                        </div>
-                      </div>
-                      {subscriberDetail.days_remaining !== undefined && subscriberDetail.days_remaining < 999999 && (
                         <div>
                           <label className="text-sm font-medium text-gray-500">
-                            {isRTL ? "الأيام المتبقية" : "Days Remaining"}
+                            {isRTL ? "البريد الإلكتروني" : "Email"}
                           </label>
-                          <p className="mt-1 text-sm text-gray-900">{subscriberDetail.days_remaining}</p>
+                          <p className="mt-1 text-sm text-gray-900">
+                            {detailData?.email || "-"}
+                          </p>
                         </div>
-                      )}
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          {isRTL ? "التجديد التلقائي" : "Auto Renew"}
-                        </label>
-                        <p className="mt-1 text-sm text-gray-900">
-                          {subscriberDetail.auto_renew ? (isRTL ? "نعم" : "Yes") : (isRTL ? "لا" : "No")}
-                        </p>
+                        {detailData?.phone_number && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">
+                              {isRTL ? "رقم الهاتف" : "Phone"}
+                            </label>
+                            <p className="mt-1 text-sm text-gray-900">
+                              {detailData.phone_number}
+                            </p>
+                          </div>
+                        )}
+                        {"account_type" in detailData && detailData.account_type && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">
+                              {isRTL ? "نوع الحساب" : "Account Type"}
+                            </label>
+                            <p className="mt-1 text-sm text-gray-900 capitalize">
+                              {detailData.account_type}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Subscription Information */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {isRTL ? "معلومات الاشتراك" : "Subscription Information"}
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "الخطة" : "Plan"}
+                          </label>
+                          <p className="mt-1 text-sm text-gray-900">{detailData.plan_name || "-"}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "نوع الخطة" : "Plan Type"}
+                          </label>
+                          <p className="mt-1 text-sm text-gray-900 capitalize">
+                            {detailData.plan_type || "-"}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "السعر" : "Price"}
+                          </label>
+                          <p className="mt-1 text-sm text-gray-900">
+                            {detailData.price}{" "}
+                            {isRTL ? "ريال" : "SAR"}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "دورة الفوترة" : "Billing Cycle"}
+                          </label>
+                          <p className="mt-1 text-sm text-gray-900 capitalize">
+                            {detailData.billing_cycle || "-"}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "تاريخ البدء" : "Start Date"}
+                          </label>
+                          <p className="mt-1 text-sm text-gray-900">
+                            {formatDate(detailData.start_date || null)}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "تاريخ الانتهاء" : "End Date"}
+                          </label>
+                          <p className="mt-1 text-sm text-gray-900">
+                            {formatDate(detailData.end_date || null)}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "الحالة" : "Status"}
+                          </label>
+                          <div className="mt-1">
+                            {getStatusBadge(detailData.status || "unknown", Boolean(detailData.is_active))}
+                          </div>
+                        </div>
+                        {detailData.days_remaining !== undefined &&
+                        detailData.days_remaining < 999999 ? (
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">
+                                {isRTL ? "الأيام المتبقية" : "Days Remaining"}
+                              </label>
+                              <p className="mt-1 text-sm text-gray-900">
+                                {detailData.days_remaining}
+                              </p>
+                            </div>
+                          ) : null}
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">
+                            {isRTL ? "التجديد التلقائي" : "Auto Renew"}
+                          </label>
+                          <p className="mt-1 text-sm text-gray-900">
+                            {detailData.auto_renew
+                              ? isRTL
+                                ? "نعم"
+                                : "Yes"
+                              : isRTL
+                              ? "لا"
+                              : "No"}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                    ) : (
+                      <div className="flex items-center justify-center py-12 text-gray-500">
+                        {isRTL ? "لا توجد تفاصيل لعرضها" : "No details available"}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>

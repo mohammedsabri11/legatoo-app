@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Modal } from "@/components/ui";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 import { caseAnalysisApi, AnalysisHistoryItem, AnalysisSections } from "@/lib/api/case-analysis";
 import {
   Brain,
@@ -77,6 +79,7 @@ export default function AIAnalysisPage() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [historyTab, setHistoryTab] = useState<"recent" | "history">("recent");
+  const { feedbackState, showFeedback, closeFeedback } = useFeedbackModal();
 
 
   // Analysis results state - now managed by useState above
@@ -126,7 +129,11 @@ export default function AIAnalysisPage() {
 
   const handleModalSubmit = async (data: LegalAnalysisData) => {
     if (!data.analysisType || !data.lawsuitType || !data.resultSeeking || data.files.length === 0) {
-      alert(isRTL ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill all required fields");
+      showFeedback({
+        variant: "error",
+        title: isRTL ? "بيانات ناقصة" : "Missing information",
+        message: isRTL ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill all required fields",
+      });
       return;
     }
 
@@ -166,19 +173,25 @@ export default function AIAnalysisPage() {
           loadAnalysisHistory();
         }
         
-        // Show success message
-        alert(isRTL ? "تم تحليل المستند بنجاح" : "Analysis completed successfully");
+        showFeedback({
+          variant: "success",
+          title: isRTL ? "تم التحليل" : "Analysis complete",
+          message: isRTL ? "تم تحليل المستند بنجاح" : "Analysis completed successfully",
+        });
       } else {
         throw new Error(response.message || "Analysis failed");
       }
     } catch (error: unknown) {
       console.error("Analysis error:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      alert(
-        isRTL
-          ? `فشل التحليل: ${errorMessage}`
-          : `Analysis failed: ${errorMessage}`
-      );
+      showFeedback({
+        variant: "error",
+        title: isRTL ? "فشل التحليل" : "Analysis failed",
+        message:
+          isRTL
+            ? `فشل التحليل: ${errorMessage}`
+            : `Analysis failed: ${errorMessage}`,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -251,40 +264,71 @@ export default function AIAnalysisPage() {
     } catch (error: unknown) {
       console.error("Download failed:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      alert(
-        isRTL
-          ? `فشل التنزيل: ${errorMessage}`
-          : `Download failed: ${errorMessage}`
-      );
+      showFeedback({
+        variant: "error",
+        title: isRTL ? "فشل التنزيل" : "Download failed",
+        message:
+          isRTL
+            ? `فشل التنزيل: ${errorMessage}`
+            : `Download failed: ${errorMessage}`,
+      });
     }
   };
 
   // Delete analysis handler
-  const handleDeleteAnalysis = async (analysisId: number | string) => {
-    if (!confirm(isRTL ? "هل أنت متأكد من حذف هذا التحليل؟" : "Are you sure you want to delete this analysis?")) {
+  const handleDeleteAnalysis = (analysisId: number | string) => {
+    const id = typeof analysisId === "string" ? parseInt(analysisId, 10) : analysisId;
+    if (isNaN(id)) {
+      showFeedback({
+        variant: "error",
+        title: isRTL ? "معرّف غير صالح" : "Invalid analysis",
+        message: isRTL
+          ? "تعذر حذف التحليل لأن المعرّف غير صالح."
+          : "Unable to delete this analysis because the identifier is invalid.",
+      });
       return;
     }
 
-    try {
-      const id = typeof analysisId === "string" ? parseInt(analysisId, 10) : analysisId;
-      if (isNaN(id)) {
-        throw new Error("Invalid analysis ID");
-      }
-      await caseAnalysisApi.deleteAnalysis(id);
-      setAnalysisResults((prev) => prev.filter((r) => r.id !== analysisId));
-      alert(isRTL ? "تم حذف التحليل بنجاح" : "Analysis deleted successfully");
-      if (historyTab === "history") {
-        loadAnalysisHistory();
-      }
-    } catch (error: unknown) {
-      console.error("Delete failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      alert(
-        isRTL
-          ? `فشل الحذف: ${errorMessage}`
-          : `Delete failed: ${errorMessage}`
-      );
-    }
+    showFeedback({
+      variant: "info",
+      title: isRTL ? "تأكيد الحذف" : "Delete analysis?",
+      message: isRTL
+        ? "هل أنت متأكد من حذف هذا التحليل؟ لا يمكن التراجع عن هذا الإجراء."
+        : "Are you sure you want to delete this analysis? This action cannot be undone.",
+      confirmLabel: isRTL ? "حذف" : "Delete",
+      cancelLabel: isRTL ? "إلغاء" : "Cancel",
+      onConfirm: async () => {
+        try {
+          await caseAnalysisApi.deleteAnalysis(id);
+          setAnalysisResults((prev) => prev.filter((r) => r.id !== analysisId));
+          if (historyTab === "history") {
+            await loadAnalysisHistory();
+          }
+          setTimeout(() => {
+            showFeedback({
+              variant: "success",
+              title: isRTL ? "تم الحذف" : "Deleted",
+              message: isRTL
+                ? "تم حذف التحليل بنجاح."
+                : "Analysis deleted successfully.",
+            });
+          }, 0);
+        } catch (error: unknown) {
+          console.error("Delete failed:", error);
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
+          setTimeout(() => {
+            showFeedback({
+              variant: "error",
+              title: isRTL ? "فشل الحذف" : "Delete failed",
+              message:
+                isRTL
+                  ? `فشل الحذف: ${errorMessage}`
+                  : `Delete failed: ${errorMessage}`,
+            });
+          }, 0);
+        }
+      },
+    });
   };
 
   // Case Analysis Tab Content
@@ -1131,6 +1175,17 @@ export default function AIAnalysisPage() {
           </div>
         )}
       </div>
+      <FeedbackModal
+        isOpen={feedbackState.isOpen}
+        onClose={closeFeedback}
+        title={feedbackState.title}
+        message={feedbackState.message}
+        variant={feedbackState.variant}
+        isRTL={isRTL}
+        onConfirm={feedbackState.onConfirm}
+        confirmLabel={feedbackState.confirmLabel}
+        cancelLabel={feedbackState.cancelLabel}
+      />
     </DashboardLayout>
   );
 }

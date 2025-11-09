@@ -18,8 +18,23 @@ async function apiCall<T>(
   const url = `${API_BASE_URL}${endpoint}`;
   
   // Ensure token is valid before making request
-  await authUtils.ensureValidToken();
+  const hasValidToken = await authUtils.ensureValidToken();
+  if (!hasValidToken) {
+    throw {
+      status: 401,
+      message: "Session expired. Please login again.",
+      errors: {},
+    };
+  }
+
   let token = authUtils.getAccessToken();
+  if (!token) {
+    throw {
+      status: 401,
+      message: "Session expired. Please login again.",
+      errors: {},
+    };
+  }
 
   const headers = new Headers(options.headers);
   
@@ -47,9 +62,14 @@ async function apiCall<T>(
       if (refreshed) {
         // Retry the request with new token
         token = authUtils.getAccessToken();
-        if (token) {
-          headers.set("Authorization", `Bearer ${token}`);
+        if (!token) {
+          throw {
+            status: 401,
+            message: "Session expired. Please login again.",
+            errors: {},
+          };
         }
+        headers.set("Authorization", `Bearer ${token}`);
         
         const retryResponse = await fetch(url, {
           ...config,
@@ -372,8 +392,23 @@ export const contractsApi = {
     const url = `${API_BASE_URL}/contracts/${contractId}/export?format=${format}`;
     
     // Ensure token is valid before making request
-    await authUtils.ensureValidToken();
+    const hasValidToken = await authUtils.ensureValidToken();
+    if (!hasValidToken) {
+      throw {
+        status: 401,
+        message: "Session expired. Please login again.",
+        errors: {},
+      };
+    }
+
     const token = authUtils.getAccessToken();
+    if (!token) {
+      throw {
+        status: 401,
+        message: "Session expired. Please login again.",
+        errors: {},
+      };
+    }
 
     const headers = new Headers();
     if (token) {

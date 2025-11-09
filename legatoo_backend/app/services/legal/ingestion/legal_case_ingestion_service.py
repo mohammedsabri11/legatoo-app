@@ -7,6 +7,8 @@ Handles file upload, text extraction, section segmentation, and database storage
 
 import os
 import re
+import json
+import asyncio
 import hashlib
 import logging
 from typing import Dict, Any, Optional, List, Tuple
@@ -61,6 +63,8 @@ class LegalCaseIngestionService:
         self.db = db
         self.upload_dir = Path(upload_dir)
         self.upload_dir.mkdir(parents=True, exist_ok=True)
+        self.gemini_api_key = os.getenv("GEMINI_API_KEY")
+        self._gemini_client = None
         
         # Enhanced Arabic section keywords for segmentation
         # Patterns are ordered from most specific to least specific for better matching
@@ -163,7 +167,7 @@ class LegalCaseIngestionService:
         # Calculate SHA-256 hash
         file_hash = hashlib.sha256(file_content).hexdigest()
         
-        # Check for duplicates
+        # Check for duplicates (including soft-deleted / archived docs)
         duplicate_check = await self.db.execute(
             select(KnowledgeDocument).where(
                 KnowledgeDocument.file_hash == file_hash
@@ -172,9 +176,17 @@ class LegalCaseIngestionService:
         existing_doc = duplicate_check.scalar_one_or_none()
         
         if existing_doc:
-            raise ValueError(
-                f"Duplicate file detected. Document already exists: {existing_doc.title} (ID: {existing_doc.id})"
-            )
+            if existing_doc.status in ("deleted", "archived"):
+                logger.info(
+                    "Duplicate hash detected, but previous document is %s (ID: %s). "
+                    "Proceeding to save as new upload.",
+                    existing_doc.status,
+                    existing_doc.id,
+                )
+            else:
+                raise ValueError(
+                    f"Duplicate file detected. Document already exists: {existing_doc.title} (ID: {existing_doc.id})"
+                )
         
         # Generate unique filename
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -669,6 +681,125 @@ class LegalCaseIngestionService:
     # =====================================================
     # SECTION SEGMENTATION
     # =====================================================
+
+    def _initialize_gemini_client(self) -> bool:
+        """Initialise Gemini client if API key is available."""
+        if not self.gemini_api_key:
+            logger.debug("Gemini API key not provided - skipping Gemini extraction")
+            return False
+
+        if self._gemini_client:
+            return True
+
+        try:
+            from google import genai
+            self._gemini_client = genai.Client(api_key=self.gemini_api_key)
+            logger.info("Gemini client initialised for legal case ingestion")
+            return True
+        except ImportError:
+            logger.error("google-genai library not installed. `pip install google-genai` to enable Gemini extraction.")
+            return False
+        except Exception as e:
+            logger.error(f"Failed to initialise Gemini client: {e}")
+            return False
+
+    def _build_gemini_sections_prompt(self, text: str, filename: str) -> str:
+        """Create prompt for Gemini to extract structured sections from legal judgement."""
+        return (
+            "أنت مساعد قانوني دقيق. لديك نص حكم قضائي باللغة العربية. "
+            "مهمتك استخراج الأقسام التالية من النص حرفياً أو بإعادة صياغة طفيفة فقط للحفاظ على المعنى، "
+            "ودون اختراع معلومات غير موجودة: \n"
+            "1. summary: مقدمة موجزة جداً عن القضية (1-3 أسطر).\n"
+            "2. facts: فقرة (أو أكثر) تتضمن الوقائع كما وردت تحت عنوان الوقائع أو ما يعادله.\n"
+            "3. arguments: حجج أو أسباب الدعوى كما وردت في النص (يمكن أن تتضمن ما تحت عنوان الأسباب أو الحجج أو ما في المتن).\n"
+            "4. ruling: منطوق الحكم النهائي (ما ورد تحت نص الحكم أو ما في نهاية الحكم).\n"
+            "5. legal_basis: النصوص النظامية أو المراجع الشرعية والقانونية التي استند إليها الحكم.\n\n"
+            "قواعد مهمة:\n"
+            "- أعد النص كما هو قدر الإمكان. استخدم علامات الترقيم العربية الأصلية.\n"
+            "- إذا لم يوجد قسم معين في المستند فاستخدم سلسلة نصية فارغة \"\" لذلك القسم.\n"
+            "- أعد النتيجة على هيئة JSON صالح بصيغة UTF-8 بدون أية تعليقات أو مقدمات أو شروحات إضافية.\n"
+            "- المفاتيح يجب أن تكون: summary, facts, arguments, ruling, legal_basis.\n"
+            "- يمنع إضافة أي حقل آخر خارج هذه المفاتيح.\n\n"
+            f"اسم الملف: {filename}\n"
+            "نص الحكم الكامل بين العلامتين <<< >>>:\n"
+            "<<<\n"
+            f"{text}\n"
+            ">>>"
+        )
+
+    def _clean_json_text(self, raw_text: str) -> str:
+        """Remove Markdown code fences from Gemini JSON output."""
+        cleaned = raw_text.strip()
+        cleaned = re.sub(r"```json\s*", "", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"```\s*", "", cleaned)
+        return cleaned.strip()
+
+    def _parse_gemini_sections(self, raw_text: str) -> Optional[Dict[str, str]]:
+        """Parse JSON string returned by Gemini into section dictionary."""
+        try:
+            cleaned = self._clean_json_text(raw_text)
+            data = json.loads(cleaned)
+            if not isinstance(data, dict):
+                return None
+
+            sections = {
+                'summary': data.get('summary', '') or '',
+                'facts': data.get('facts', '') or '',
+                'arguments': data.get('arguments', '') or '',
+                'ruling': data.get('ruling', '') or '',
+                'legal_basis': data.get('legal_basis', '') or ''
+            }
+
+            # Ensure all values are strings
+            for key, value in sections.items():
+                if value is None:
+                    sections[key] = ''
+                elif isinstance(value, list):
+                    sections[key] = "\n".join(str(item) for item in value if item)
+                else:
+                    sections[key] = str(value)
+
+            return sections
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to decode Gemini JSON response: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error parsing Gemini response: {e}")
+            return None
+
+    async def extract_sections(self, text: str, filename: str) -> Dict[str, str]:
+        """
+        Attempt to extract sections using Gemini; fallback to regex-based segmentation.
+        """
+        if not self._initialize_gemini_client():
+            logger.debug("Falling back to regex-based section extraction")
+            return self.split_case_sections(text)
+
+        prompt = self._build_gemini_sections_prompt(text, filename)
+
+        try:
+            response = await asyncio.to_thread(
+                self._gemini_client.models.generate_content,
+                model="gemini-2.0-flash-exp",
+                contents=[prompt]
+            )
+
+            raw_text = getattr(response, "text", "")
+            if not raw_text:
+                logger.warning("Gemini returned empty response; using regex splitter")
+                return self.split_case_sections(text)
+
+            sections = self._parse_gemini_sections(raw_text)
+            if not sections:
+                logger.warning("Gemini response parsing failed; using regex splitter")
+                return self.split_case_sections(text)
+
+            logger.info("Sections extracted using Gemini successfully")
+            return sections
+
+        except Exception as e:
+            logger.error(f"Gemini section extraction failed: {e}", exc_info=True)
+            return self.split_case_sections(text)
     
     def split_case_sections(self, text: str) -> Dict[str, str]:
         """
@@ -848,9 +979,9 @@ class LegalCaseIngestionService:
             
             logger.info(f"Extracted {len(text)} characters")
             
-            # Step 3: Split into sections
+            # Step 3: Split into sections (prefer Gemini, fallback to regex)
             logger.info(f"Step 3: Splitting text into sections")
-            sections = self.split_case_sections(text)
+            sections = await self.extract_sections(text, filename)
             
             # Step 4: Save case and sections to database
             logger.info(f"Step 4: Saving case and sections to database")

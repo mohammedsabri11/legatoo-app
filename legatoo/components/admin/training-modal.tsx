@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { X, Brain, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 interface TrainingModalProps {
   isOpen: boolean;
@@ -27,6 +29,7 @@ export function TrainingModal({
   const totalDurationRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const statusRef = useRef<TrainingStatus>("starting");
+  const { feedbackState, showFeedback, closeFeedback } = useFeedbackModal();
 
   // Cleanup on unmount or close
   useEffect(() => {
@@ -140,25 +143,26 @@ export function TrainingModal({
 
   const handleClose = () => {
     if (status === "in_progress") {
-      // Ask for confirmation if training is in progress
-      if (
-        window.confirm(
-          isRTL
-            ? "هل أنت متأكد من إغلاق النافذة؟ سيتم إيقاف عملية التدريب."
-            : "Are you sure you want to close? Training will be stopped."
-        )
-      ) {
-        // Stop the training
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
-        }
-        onClose();
-      }
+      showFeedback({
+        variant: "info",
+        title: isRTL ? "إيقاف التدريب؟" : "Stop training?",
+        message: isRTL
+          ? "هل أنت متأكد من إغلاق النافذة؟ سيتم إيقاف عملية التدريب."
+          : "Are you sure you want to close? Training will be stopped.",
+        confirmLabel: isRTL ? "إيقاف" : "Stop",
+        cancelLabel: isRTL ? "متابعة" : "Continue",
+        onConfirm: () => {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+          }
+          onClose();
+        },
+      });
     } else {
       onClose();
     }
@@ -358,6 +362,17 @@ export function TrainingModal({
           </button>
         </div>
       </div>
+      <FeedbackModal
+        isOpen={feedbackState.isOpen}
+        onClose={closeFeedback}
+        title={feedbackState.title}
+        message={feedbackState.message}
+        variant={feedbackState.variant}
+        onConfirm={feedbackState.onConfirm}
+        confirmLabel={feedbackState.confirmLabel}
+        cancelLabel={feedbackState.cancelLabel}
+        isRTL={isRTL}
+      />
     </div>
   );
 }

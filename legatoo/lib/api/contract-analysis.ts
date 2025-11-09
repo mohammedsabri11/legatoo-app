@@ -14,7 +14,23 @@ async function apiCall<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
+  const hasValidToken = await authUtils.ensureValidToken();
+  if (!hasValidToken) {
+    throw {
+      status: 401,
+      message: "Authentication required. Please login again.",
+      errors: {},
+    };
+  }
+
   const token = authUtils.getAccessToken();
+  if (!token) {
+    throw {
+      status: 401,
+      message: "Authentication required. Please login again.",
+      errors: {},
+    };
+  }
 
   const headers = new Headers(options.headers);
   if (token) {

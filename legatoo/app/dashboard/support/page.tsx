@@ -25,11 +25,14 @@ import {
   Phone,
   Shield,
 } from "lucide-react";
+import { FeedbackModal } from "@/components/ui/feedback-modal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 export default function SupportPage() {
   const { t, locale } = useTranslation();
   const isRTL = locale === "ar";
   const user = useUser();
+  const { feedbackState, showFeedback, closeFeedback } = useFeedbackModal();
   
   // Get user role
   const userRole = user?.role || "user";
@@ -157,7 +160,11 @@ export default function SupportPage() {
         setAdminResponse("");
         await loadTickets();
         // Show success message
-        alert(t("dashboard.support.messages.responseSent"));
+        showFeedback({
+          variant: "success",
+          title: isRTL ? "تم الإرسال" : "Response sent",
+          message: t("dashboard.support.messages.responseSent") as string,
+        });
       } else {
         setError(response.message || t("dashboard.support.messages.failedToUpdate"));
       }
@@ -170,22 +177,51 @@ export default function SupportPage() {
   };
 
   // Delete ticket
-  const handleDeleteTicket = async (ticketId: number) => {
-    if (!confirm(t("dashboard.support.messages.deleteConfirm"))) {
-      return;
-    }
-
-    try {
-      const response = await supportApi.deleteTicket(ticketId);
-      if (response.success) {
-        await loadTickets();
-      } else {
-        setError(response.message || t("dashboard.support.messages.failedToDelete"));
-      }
-    } catch (err: unknown) {
-      const error = err as { message?: string };
-      setError(error.message || t("dashboard.support.messages.failedToDelete"));
-    }
+  const handleDeleteTicket = (ticketId: number) => {
+    showFeedback({
+      variant: "info",
+      title: isRTL ? "تأكيد الحذف" : "Delete ticket?",
+      message: t("dashboard.support.messages.deleteConfirm") as string,
+      confirmLabel: isRTL ? "حذف" : "Delete",
+      cancelLabel: t("dashboard.support.modal.cancel") as string,
+      onConfirm: async () => {
+        try {
+          const response = await supportApi.deleteTicket(ticketId);
+          if (response.success) {
+            await loadTickets();
+            setTimeout(() => {
+              showFeedback({
+                variant: "success",
+                title: isRTL ? "تم الحذف" : "Deleted",
+                message: isRTL ? "تم حذف التذكرة بنجاح." : "Ticket deleted successfully.",
+              });
+            }, 0);
+          } else {
+            setError(response.message || t("dashboard.support.messages.failedToDelete"));
+            setTimeout(() => {
+              showFeedback({
+                variant: "error",
+                title: isRTL ? "فشل الحذف" : "Delete failed",
+                message:
+                  response.message || (t("dashboard.support.messages.failedToDelete") as string),
+              });
+            }, 0);
+          }
+        } catch (err: unknown) {
+          const error = err as { message?: string };
+          setError(error.message || t("dashboard.support.messages.failedToDelete"));
+          setTimeout(() => {
+            showFeedback({
+              variant: "error",
+              title: isRTL ? "فشل الحذف" : "Delete failed",
+              message:
+                (error.message ||
+                  (t("dashboard.support.messages.failedToDelete") as string)) ?? "",
+            });
+          }, 0);
+        }
+      },
+    });
   };
 
   // Get status badge
@@ -844,6 +880,17 @@ export default function SupportPage() {
           </div>
         )}
       </div>
+      <FeedbackModal
+        isOpen={feedbackState.isOpen}
+        onClose={closeFeedback}
+        title={feedbackState.title}
+        message={feedbackState.message}
+        variant={feedbackState.variant}
+        onConfirm={feedbackState.onConfirm}
+        confirmLabel={feedbackState.confirmLabel}
+        cancelLabel={feedbackState.cancelLabel}
+        isRTL={isRTL}
+      />
     </DashboardLayout>
   );
 }

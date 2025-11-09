@@ -17,8 +17,23 @@ async function apiCall<T>(
   const url = `${API_BASE_URL}${endpoint}`;
   
   // Ensure token is valid before making request
-  await authUtils.ensureValidToken();
+  const hasValidToken = await authUtils.ensureValidToken();
+  if (!hasValidToken) {
+    throw {
+      status: 401,
+      message: "Authentication required. Please login again.",
+      errors: {},
+    };
+  }
+
   let token = authUtils.getAccessToken();
+  if (!token) {
+    throw {
+      status: 401,
+      message: "Authentication required. Please login again.",
+      errors: {},
+    };
+  }
 
   // Debug logging
   console.log("🔗 API Call:", {
@@ -55,30 +70,36 @@ async function apiCall<T>(
       if (refreshed) {
         // Get the new token
         token = authUtils.getAccessToken();
-        if (token) {
-          // Update headers with new token
-          headers.set("Authorization", `Bearer ${token}`);
-          const retryConfig: RequestInit = {
-            ...options,
-            headers: headers,
+        if (!token) {
+          throw {
+            status: 401,
+            message: "Authentication required. Please login again.",
+            errors: {},
           };
-          
-          // Retry the request once
-          console.log("🔄 Retrying request with new token...");
-          const retryResponse = await fetch(url, retryConfig);
-          
-          if (!retryResponse.ok) {
-            const errorData = await retryResponse.json().catch(() => ({}));
-            throw {
-              status: retryResponse.status,
-              message: errorData.message || "An error occurred",
-              errors: errorData.errors || {},
-            };
-          }
-          
-          const data = await retryResponse.json();
-          return data;
         }
+
+        // Update headers with new token
+        headers.set("Authorization", `Bearer ${token}`);
+        const retryConfig: RequestInit = {
+          ...options,
+          headers: headers,
+        };
+        
+        // Retry the request once
+        console.log("🔄 Retrying request with new token...");
+        const retryResponse = await fetch(url, retryConfig);
+        
+        if (!retryResponse.ok) {
+          const errorData = await retryResponse.json().catch(() => ({}));
+          throw {
+            status: retryResponse.status,
+            message: errorData.message || "An error occurred",
+            errors: errorData.errors || {},
+          };
+        }
+        
+        const data = await retryResponse.json();
+        return data;
       } else {
         // Token refresh failed, redirect to login
         console.error("❌ Token refresh failed, user needs to re-authenticate");
