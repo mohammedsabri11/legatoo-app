@@ -58,8 +58,9 @@ class SuperAdminService:
                     }
                 )
             
-            # Hash the password
-            password_hash = pwd_context.hash(self.super_admin_password)
+            # Hash the password (bcrypt has 72 byte limit)
+            password_to_hash = self.super_admin_password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
+            password_hash = pwd_context.hash(password_to_hash)
             
             # Create super admin user
             super_admin = User(

@@ -216,7 +216,7 @@ export function ContractEditor({
 
   if (!editor) {
     return (
-      <div className="w-full min-h-[600px] px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center">
+      <div className="w-full min-h-[600px] px-4 py-3 border border-gray-300 rounded-lg bg-white flex items-center justify-center">
         <p className="text-gray-500">Loading editor...</p>
       </div>
     );
@@ -226,33 +226,33 @@ export function ContractEditor({
 
   return (
     <div className="space-y-4">
-      <div className="relative border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 overflow-hidden">
+      <div className="relative border border-gray-300 rounded-lg bg-white overflow-hidden">
         {/* Toolbar */}
-        <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center gap-2 flex-wrap">
+        <div className="border-b border-gray-200 px-4 py-2 flex items-center gap-2 flex-wrap">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`px-2 py-1 rounded ${editor.isActive('bold') ? 'bg-gray-200 dark:bg-gray-700' : ''} hover:bg-gray-100 dark:hover:bg-gray-700`}
+            className={`px-2 py-1 rounded ${editor.isActive('bold') ? 'bg-gray-200' : ''} hover:bg-gray-100`}
             title="Bold"
           >
             <strong>B</strong>
           </button>
           <button
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`px-2 py-1 rounded ${editor.isActive('italic') ? 'bg-gray-200 dark:bg-gray-700' : ''} hover:bg-gray-100 dark:hover:bg-gray-700`}
+            className={`px-2 py-1 rounded ${editor.isActive('italic') ? 'bg-gray-200' : ''} hover:bg-gray-100`}
             title="Italic"
           >
             <em>I</em>
           </button>
           <button
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`px-2 py-1 rounded ${editor.isActive('bulletList') ? 'bg-gray-200 dark:bg-gray-700' : ''} hover:bg-gray-100 dark:hover:bg-gray-700`}
+            className={`px-2 py-1 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : ''} hover:bg-gray-100`}
             title="Bullet List"
           >
             •
           </button>
           <button
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`px-2 py-1 rounded ${editor.isActive('orderedList') ? 'bg-gray-200 dark:bg-gray-700' : ''} hover:bg-gray-100 dark:hover:bg-gray-700`}
+            className={`px-2 py-1 rounded ${editor.isActive('orderedList') ? 'bg-gray-200' : ''} hover:bg-gray-100`}
             title="Numbered List"
           >
             1.
@@ -260,12 +260,12 @@ export function ContractEditor({
         </div>
 
         {/* Editor Content */}
-        <div className="contract-editor-wrapper min-h-[600px] bg-white dark:bg-gray-800">
+        <div className="contract-editor-wrapper min-h-[600px] bg-white">
           <EditorContent editor={editor} />
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-sm text-gray-500">
         <span>{currentContent.length} {t("contracts.edit.characters")}</span>
         <div className="flex gap-2">
           {onSave && (

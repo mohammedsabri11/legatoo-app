@@ -44,28 +44,28 @@ async def verify_user_email(email: str) -> bool:
             user = result.scalar_one_or_none()
             
             if not user:
-                print(f"❌ User with email '{email}' not found.")
+                print(f"ERROR: User with email '{email}' not found.")
                 return False
-            
+
             # Check if already verified
             if user.is_verified:
-                print(f"✅ User '{email}' is already verified.")
+                print(f"SUCCESS: User '{email}' is already verified.")
                 return True
-            
+
             # Update the user's verification status
             await session.execute(
                 update(User)
                 .where(User.email == email)
                 .values(is_verified=True)
             )
-            
+
             await session.commit()
-            
-            print(f"✅ Successfully verified user '{email}'")
+
+            print(f"SUCCESS: Successfully verified user '{email}'")
             return True
-            
+
     except Exception as e:
-        print(f"❌ Error verifying user '{email}': {str(e)}")
+        print(f"ERROR: Error verifying user '{email}': {str(e)}")
         return False
 
 
@@ -88,28 +88,28 @@ async def delete_user_profile(email: str) -> bool:
             user = result.scalar_one_or_none()
             
             if not user:
-                print(f"❌ User with email '{email}' not found.")
+                print(f"ERROR: User with email '{email}' not found.")
                 return False
-            
+
             # Find the user's profile
             profile_result = await session.execute(
                 select(Profile).where(Profile.user_id == user.id)
             )
             profile = profile_result.scalar_one_or_none()
-            
+
             if not profile:
-                print(f"⚠️ No profile found for user '{email}'.")
+                print(f"WARNING: No profile found for user '{email}'.")
                 return True  # Consider this successful since there's nothing to delete
-            
+
             # Delete the profile
             await session.delete(profile)
             await session.commit()
-            
-            print(f"✅ Successfully deleted profile for user '{email}'")
+
+            print(f"SUCCESS: Successfully deleted profile for user '{email}'")
             return True
-            
+
     except Exception as e:
-        print(f"❌ Error deleting profile for user '{email}': {str(e)}")
+        print(f"ERROR: Error deleting profile for user '{email}': {str(e)}")
         return False
 
 
@@ -123,10 +123,10 @@ async def list_unverified_users():
             users = result.scalars().all()
             
             if not users:
-                print("✅ All users are verified!")
+                print("SUCCESS: All users are verified!")
                 return
-            
-            print(f"📋 Found {len(users)} unverified users:")
+
+            print(f"INFO: Found {len(users)} unverified users:")
             for user in users:
                 print(f"  - {user.email} (ID: {user.id})")
                 
@@ -145,13 +145,13 @@ async def list_users_with_profiles():
             user_profile_pairs = result.all()
             
             if not user_profile_pairs:
-                print("📋 No users found in the database.")
+                print("INFO: No users found in the database.")
                 return
-            
-            print(f"📋 Found {len(user_profile_pairs)} users:")
+
+            print(f"INFO: Found {len(user_profile_pairs)} users:")
             for user, profile in user_profile_pairs:
-                profile_status = "✅ Has profile" if profile else "❌ No profile"
-                verification_status = "✅ Verified" if user.is_verified else "❌ Unverified"
+                profile_status = "Has profile" if profile else "No profile"
+                verification_status = "Verified" if user.is_verified else "Unverified"
                 print(f"  - {user.email} (ID: {user.id}) - {verification_status} - {profile_status}")
                 
     except Exception as e:

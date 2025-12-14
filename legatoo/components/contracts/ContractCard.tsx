@@ -18,12 +18,12 @@ export function ContractCard({ contract }: ContractCardProps) {
   return (
     <Link
       href={`/dashboard/contracts-library/${contract.id}`}
-      className="block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow"
+      className="block p-6 bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <FileText className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+          <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
             {contract.title}
           </h3>
         </div>
@@ -32,27 +32,27 @@ export function ContractCard({ contract }: ContractCardProps) {
 
       <div className="space-y-2 mb-4">
         {contract.category && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
             <span className="font-medium">{t("contracts.card.category")}:</span>
             <span>{contract.category}</span>
           </div>
         )}
 
         {contract.jurisdiction && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
             <Globe className="w-4 h-4" />
             <span>{contract.jurisdiction}</span>
           </div>
         )}
 
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
           <Calendar className="w-4 h-4" />
           <span>
             {new Date(contract.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500">
+        <div className="flex items-center gap-3 text-xs text-gray-500">
           <span>{t("contracts.card.version")} {contract.version}</span>
           {contract.ai_generated && (
             <span className="flex items-center gap-1">

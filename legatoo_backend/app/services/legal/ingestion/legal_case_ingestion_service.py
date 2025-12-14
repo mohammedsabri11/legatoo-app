@@ -34,6 +34,12 @@ try:
 except ImportError:
     DocxDocument = None
 
+from ....models.legal_knowledge import (
+    KnowledgeDocument, LegalCase, CaseSection, KnowledgeChunk
+)
+
+logger = logging.getLogger(__name__)
+
 # Enhanced PDF processor for better Arabic text extraction
 try:
     from ....processors.enhanced_arabic_pdf_processor import EnhancedArabicPDFProcessor
@@ -41,12 +47,6 @@ try:
 except ImportError:
     ENHANCED_PDF_AVAILABLE = False
     logger.warning("EnhancedArabicPDFProcessor not available, using basic extraction")
-
-from ....models.legal_knowledge import (
-    KnowledgeDocument, LegalCase, CaseSection, KnowledgeChunk
-)
-
-logger = logging.getLogger(__name__)
 
 
 class LegalCaseIngestionService:

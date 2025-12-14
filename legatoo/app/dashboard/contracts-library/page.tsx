@@ -59,14 +59,14 @@ export default function ContractsLibraryPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 bg-white min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray-900">
             {t("contracts.title")}
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500">
             {t("contracts.subtitle")}
           </p>
         </div>
@@ -82,7 +82,7 @@ export default function ContractsLibraryPage() {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div className="md:col-span-2">
             <SearchBar
@@ -96,7 +96,7 @@ export default function ContractsLibraryPage() {
             onChange={(e) =>
               handleFilterChange("status", e.target.value || undefined)
             }
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white"
+            className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
           >
             <option value="">{t("contracts.allStatus")}</option>
             <option value="draft">{t("contracts.status.draft")}</option>
@@ -109,7 +109,7 @@ export default function ContractsLibraryPage() {
             onChange={(e) =>
               handleFilterChange("category", e.target.value || undefined)
             }
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white"
+            className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
           >
             <option value="">{t("contracts.allCategories")}</option>
             <option value="Employment">Employment</option>
@@ -155,7 +155,7 @@ export default function ContractsLibraryPage() {
       {isLoading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">{t("contracts.loading")}</p>
+          <p className="mt-4 text-gray-600">{t("contracts.loading")}</p>
         </div>
       ) : error ? (
         <div className="text-center py-12">
@@ -200,8 +200,8 @@ export default function ContractsLibraryPage() {
           )}
         </>
       ) : (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-gray-600 mb-4">
             {t("contracts.noContractsFound")}
           </p>
           <Link

@@ -73,7 +73,9 @@ class AuthService:
     
     def get_password_hash(self, password: str) -> str:
         """Hash a password."""
-        return pwd_context.hash(password)
+        # bcrypt has 72 byte limit, truncate if necessary
+        password_to_hash = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
+        return pwd_context.hash(password_to_hash)
     
     def create_access_token(self, data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
         """Create a JWT access token."""
