@@ -12,7 +12,8 @@ import base64
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv("supabase.env")
+load_dotenv()  # Load .env first
+load_dotenv("supabase.env", override=False)  # Then supabase.env if it exists
 
 # Get encryption key from environment
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")

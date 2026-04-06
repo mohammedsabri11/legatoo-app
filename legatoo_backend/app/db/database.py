@@ -5,7 +5,8 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv("supabase.env")
+load_dotenv()  # Load .env first
+load_dotenv("supabase.env", override=False)  # Then supabase.env if it exists
 
 # Database URL - Force SQLite (local file database)
 DATABASE_URL = "sqlite+aiosqlite:///./app.db"

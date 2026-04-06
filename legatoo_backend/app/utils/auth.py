@@ -9,8 +9,9 @@ from dotenv import load_dotenv
 
 from ..schemas.profile_schemas import TokenData
 
-# Load environment variables
-load_dotenv("supabase.env")
+# Load environment variables from both .env and supabase.env
+load_dotenv()  # Load .env first
+load_dotenv("supabase.env", override=False)  # Then supabase.env if it exists
 
 # JWT Configuration
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
@@ -26,7 +27,7 @@ security = HTTPBearer()
 # If SUPABASE_JWT_SECRET is not set, we'll use the project's JWT secret
 # You can get this from Supabase Dashboard > Settings > API > JWT Secret
 if not SUPABASE_JWT_SECRET:
-    print("⚠️  WARNING: SUPABASE_JWT_SECRET not found in environment variables.")
+    print("WARNING: SUPABASE_JWT_SECRET not found in environment variables.")
     print("Please add SUPABASE_JWT_SECRET to your supabase.env file.")
     print("You can find it in Supabase Dashboard > Settings > API > JWT Secret")
 

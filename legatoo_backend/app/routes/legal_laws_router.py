@@ -1074,76 +1074,101 @@ async def answer_query(
     current_user: TokenData = Depends(get_current_user)
 ):
     """
-    Answer a query using Chroma similarity search and Gemini AI.
-    
+    Answer a query using direct Gemini AI chat.
+
     **How it works:**
-    - Searches the Chroma vectorstore for chunks similar to your query
-    - Uses Gemini AI to generate a clear, contextualized answer
-    - Returns a professional legal answer in Arabic
-    
-    **Features:**
-    - Semantic search across all uploaded legal documents
-    - AI-generated answers based on relevant articles
-    - Cites specific article numbers and law sources
-    - Optional filtering by document ID
-    
+    - Sends your question directly to Gemini AI
+    - Returns a clear, professional answer
+
     **Returns:**
     - `answer`: A clear, AI-generated answer to your question
     - `query`: The original question
     - `message`: Status message
-    
+
     **Example Query:**
-    "ماهي مهام واختصاصات مفتشي العمل؟"
-    
+    "hi" or "مرحبا"
+
     **Example Response:**
     ```json
     {
       "success": true,
-      "message": "Found 5 relevant results",
+      "message": "تم معالجة السؤال بنجاح",
       "data": {
-        "answer": "بناءً على المادة 138 من نظام العمل السعودي...",
-        "query": "ماهي مهام واختصاصات مفتشي العمل؟"
+        "answer": "مرحبا! كيف يمكنني مساعدتك؟",
+        "query": "hi"
       }
     }
     ```
     """
     try:
-        from ..services.legal.knowledge.document_parser_service import DocumentUploadService
-        
-        # Initialize the service
-        service = DocumentUploadService(db)
-        
-        # Perform the query (now returns AI-generated answer)
-        result = await service.answer_query(
-            query=query,
-            document_id=document_id,
-            top_k=top_k
-        )
-        
-        if result.get("success"):
-            # Return only the answer and query (no raw chunks)
-            return create_success_response(
-                message=result.get("answer", "تم معالجة السؤال بنجاح"),
-                data={
-                    "answer": result.get("answer", ""),
-                    "query": result.get("query", query)
-                }
-            )
-        else:
+        import os
+        import asyncio
+        from google import genai
+
+        # Get Gemini API key from environment
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if not gemini_api_key:
+            logger.error("❌ GEMINI_API_KEY not found in environment variables")
             from fastapi.responses import JSONResponse
             error_response = create_error_response(
-                message=result.get("answer", result.get("message", "فشل في معالجة السؤال"))
+                message="خدمة الذكاء الاصطناعي غير متوفرة حالياً. يرجى التواصل مع المسؤول."
             )
-            return JSONResponse(
-                status_code=400,
-                content=error_response.model_dump()
-            )
-            
+            return JSONResponse(status_code=500, content=error_response.model_dump())
+
+        # Initialize Gemini client
+        logger.info("🤖 Initializing Gemini client for direct chat...")
+        gemini_client = genai.Client(api_key=gemini_api_key)
+
+        # Create a simple prompt
+        prompt = f"""أنت مساعد ذكي ومفيد. أجب على السؤال التالي بطريقة واضحة ومختصرة:
+
+السؤال: {query}
+
+الإجابة:"""
+
+        # Call Gemini API with timeout
+        logger.info(f"📤 Sending query to Gemini: '{query[:50]}...'")
+        response = await asyncio.wait_for(
+            asyncio.to_thread(
+                gemini_client.models.generate_content,
+                model="gemini-pro",
+                contents=prompt,
+                config={
+                    "temperature": 0.7,
+                    "max_output_tokens": 1000,
+                    "top_p": 0.9
+                }
+            ),
+            timeout=20.0
+        )
+
+        if response and hasattr(response, 'text') and response.text:
+            answer = response.text.strip()
+            logger.info("✅ Answer generated successfully")
+        else:
+            raise ValueError("Empty response from Gemini")
+
+        # Return the answer
+        return create_success_response(
+            message="تم معالجة السؤال بنجاح",
+            data={
+                "answer": answer,
+                "query": query
+            }
+        )
+
+    except asyncio.TimeoutError:
+        logger.error("❌ Gemini API timeout")
+        from fastapi.responses import JSONResponse
+        error_response = create_error_response(
+            message="عذراً، استغرق توليد الإجابة وقتاً طويلاً. يرجى المحاولة مرة أخرى."
+        )
+        return JSONResponse(status_code=500, content=error_response.model_dump())
     except Exception as e:
         logger.error(f"❌ Query failed: {e}", exc_info=True)
         from fastapi.responses import JSONResponse
         error_response = create_error_response(
-            message="حدث خطأ أثناء معالجة السؤال. يرجى المحاولة مرة أخرى."
+            message=f"حدث خطأ أثناء معالجة السؤال: {str(e)}"
         )
         return JSONResponse(status_code=500, content=error_response.model_dump())
 

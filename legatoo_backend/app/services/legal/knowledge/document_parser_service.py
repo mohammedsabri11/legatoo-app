@@ -26,12 +26,21 @@ from sqlalchemy import select, func, delete
 from sqlalchemy.orm import selectinload
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-try:
-    from langchain_chroma import Chroma
-except ImportError:
-    from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from google import genai
+
+# Lazy import for Chroma - Python 3.14 compatibility
+Chroma = None
+CHROMA_AVAILABLE = False
+try:
+    try:
+        from langchain_chroma import Chroma
+    except ImportError:
+        from langchain_community.vectorstores import Chroma
+    CHROMA_AVAILABLE = True
+except Exception as e:
+    import logging
+    logging.getLogger(__name__).warning(f"⚠️ Chroma not available: {e}. Vector search features disabled.")
 
 from ....models.legal_knowledge import (
     KnowledgeDocument, LawSource, LawArticle, KnowledgeChunk,
@@ -81,7 +90,7 @@ class VectorstoreManager:
     def _initialize_vectorstore(self):
         """Initialize Chroma vectorstore, embeddings, and Gemini client."""
         logger.info("🚀 Initializing VectorstoreManager...")
-        
+
         try:
             # Initialize Gemini client
             logger.info("🤖 Initializing Gemini client...")
@@ -92,7 +101,7 @@ class VectorstoreManager:
             else:
                 self.gemini_client = genai.Client(api_key=self.gemini_api_key)
                 logger.info("✅ Gemini client initialized successfully")
-            
+
             # Initialize Arabic embeddings for semantic search
             logger.info(f"📦 Loading Arabic embeddings model: {EMBEDDING_MODEL}")
             self.embeddings = HuggingFaceEmbeddings(
@@ -101,22 +110,32 @@ class VectorstoreManager:
                 encode_kwargs={'normalize_embeddings': True}
             )
             logger.info("✅ Arabic embeddings model loaded successfully")
-            
-            # Initialize Chroma vectorstore
-            self.vectorstore = Chroma(
-                collection_name="legal_knowledge",
-                embedding_function=self.embeddings,
-                persist_directory=VECTORSTORE_PATH,
-            )
-            
+
+            # Initialize Chroma vectorstore (if available)
+            self.vectorstore = None
+            if CHROMA_AVAILABLE and Chroma is not None:
+                try:
+                    self.vectorstore = Chroma(
+                        collection_name="legal_knowledge",
+                        embedding_function=self.embeddings,
+                        persist_directory=VECTORSTORE_PATH,
+                    )
+                    logger.info("✅ Chroma vectorstore initialized")
+                except ImportError as chroma_err:
+                    logger.warning(f"⚠️ Chroma import failed: {chroma_err}. Vector search disabled. Use Python 3.12.")
+                except Exception as chroma_err:
+                    logger.warning(f"⚠️ Chroma initialization failed: {chroma_err}. Vector search disabled.")
+            else:
+                logger.warning("⚠️ Chroma not available - vector search disabled. Consider using Python 3.12 or 3.13.")
+
             # Initialize text splitter
             self.text_splitter = RecursiveCharacterTextSplitter(
                 chunk_size=CHUNK_SIZE,
                 chunk_overlap=CHUNK_OVERLAP
             )
-            
+
             logger.info("✅ VectorstoreManager initialized with Arabic embeddings and Gemini!")
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to initialize VectorstoreManager: {e}")
             raise
@@ -169,23 +188,22 @@ class DualDatabaseManager:
             self.db.add(chunk)
             await self.db.commit()
             await self.db.refresh(chunk)
-            
-            # Prepare metadata for Chroma (ensure compatibility)
-            chroma_metadata = self._prepare_chroma_metadata(metadata, chunk)
-            
-            # Add to Chroma vectorstore
-            self.vectorstore.add_texts(
-                texts=[content],
-                metadatas=[chroma_metadata],
-                ids=[str(chunk.id)]  # Use SQL ID as Chroma ID for synchronization
-            )
-            
-            # Persist Chroma changes
-            self.vectorstore.persist()
-            
-            logger.info(f"✅ Chunk {chunk.id} added to both databases")
+
+            # Add to Chroma vectorstore (if available)
+            if self.vectorstore is not None:
+                chroma_metadata = self._prepare_chroma_metadata(metadata, chunk)
+                self.vectorstore.add_texts(
+                    texts=[content],
+                    metadatas=[chroma_metadata],
+                    ids=[str(chunk.id)]
+                )
+                self.vectorstore.persist()
+                logger.info(f"✅ Chunk {chunk.id} added to both databases")
+            else:
+                logger.info(f"✅ Chunk {chunk.id} added to SQL only (Chroma unavailable)")
+
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to add chunk to both databases: {e}")
             await self.db.rollback()
@@ -206,26 +224,27 @@ class DualDatabaseManager:
             if not chunk:
                 logger.error(f"❌ Chunk {chunk_id} not found in SQL database")
                 return False
-            
+
             chunk.content = new_content
             chunk.updated_at = datetime.utcnow()
             await self.db.commit()
-            
-            # Update Chroma vectorstore
-            chroma_metadata = self._prepare_chroma_metadata(new_metadata, chunk)
-            
-            # Delete old entry and add new one
-            self.vectorstore.delete(ids=[str(chunk_id)])
-            self.vectorstore.add_texts(
-                texts=[new_content],
-                metadatas=[chroma_metadata],
-                ids=[str(chunk_id)]
-            )
-            self.vectorstore.persist()
-            
-            logger.info(f"✅ Chunk {chunk_id} updated in both databases")
+
+            # Update Chroma vectorstore (if available)
+            if self.vectorstore is not None:
+                chroma_metadata = self._prepare_chroma_metadata(new_metadata, chunk)
+                self.vectorstore.delete(ids=[str(chunk_id)])
+                self.vectorstore.add_texts(
+                    texts=[new_content],
+                    metadatas=[chroma_metadata],
+                    ids=[str(chunk_id)]
+                )
+                self.vectorstore.persist()
+                logger.info(f"✅ Chunk {chunk_id} updated in both databases")
+            else:
+                logger.info(f"✅ Chunk {chunk_id} updated in SQL only (Chroma unavailable)")
+
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to update chunk {chunk_id}: {e}")
             await self.db.rollback()
@@ -241,19 +260,22 @@ class DualDatabaseManager:
             if chunk:
                 await self.db.delete(chunk)
                 await self.db.commit()
-            
-            # Delete from Chroma vectorstore
-            self.vectorstore.delete(ids=[str(chunk_id)])
-            self.vectorstore.persist()
-            
-            logger.info(f"✅ Chunk {chunk_id} deleted from both databases")
+
+            # Delete from Chroma vectorstore (if available)
+            if self.vectorstore is not None:
+                self.vectorstore.delete(ids=[str(chunk_id)])
+                self.vectorstore.persist()
+                logger.info(f"✅ Chunk {chunk_id} deleted from both databases")
+            else:
+                logger.info(f"✅ Chunk {chunk_id} deleted from SQL only (Chroma unavailable)")
+
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to delete chunk {chunk_id}: {e}")
             await self.db.rollback()
             return False
-    
+
     async def delete_document_from_both_databases(self, document_id: int) -> bool:
         """
         Delete document and all its chunks from both databases.
@@ -264,22 +286,22 @@ class DualDatabaseManager:
                 select(KnowledgeChunk).where(KnowledgeChunk.document_id == document_id)
             )
             chunks = chunks_result.scalars().all()
-            
-            # Delete chunks from Chroma first
+
+            # Delete chunks from Chroma first (if available)
             chunk_ids = [str(chunk.id) for chunk in chunks]
-            if chunk_ids:
+            if chunk_ids and self.vectorstore is not None:
                 self.vectorstore.delete(ids=chunk_ids)
                 self.vectorstore.persist()
-            
+
             # Delete document from SQL (cascade will handle chunks)
             document = await self.db.get(KnowledgeDocument, document_id)
             if document:
                 await self.db.delete(document)
                 await self.db.commit()
-            
+
             logger.info(f"✅ Document {document_id} and {len(chunks)} chunks deleted from both databases")
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to delete document {document_id}: {e}")
             await self.db.rollback()
@@ -334,29 +356,35 @@ class DualDatabaseManager:
                 "chroma_chunks": 0,
                 "missing_in_chroma": 0,
                 "missing_in_sql": 0,
-                "synced": 0
+                "synced": 0,
+                "chroma_available": self.vectorstore is not None
             }
-            
+
             # Get all chunks from SQL
             sql_result = await self.db.execute(select(KnowledgeChunk))
             sql_chunks = sql_result.scalars().all()
             stats["sql_chunks"] = len(sql_chunks)
-            
-            # Get all chunks from Chroma
-            chroma_collection = self.vectorstore._collection
-            chroma_chunks = chroma_collection.get()
-            stats["chroma_chunks"] = len(chroma_chunks.get("ids", []))
-            
-            # Find missing chunks
-            sql_ids = {str(chunk.id) for chunk in sql_chunks}
-            chroma_ids = set(chroma_chunks.get("ids", []))
-            
-            missing_in_chroma = sql_ids - chroma_ids
-            missing_in_sql = chroma_ids - sql_ids
-            
-            stats["missing_in_chroma"] = len(missing_in_chroma)
-            stats["missing_in_sql"] = len(missing_in_sql)
-            stats["synced"] = len(sql_ids & chroma_ids)            
+
+            # Get all chunks from Chroma (if available)
+            if self.vectorstore is not None:
+                chroma_collection = self.vectorstore._collection
+                chroma_chunks = chroma_collection.get()
+                stats["chroma_chunks"] = len(chroma_chunks.get("ids", []))
+
+                # Find missing chunks
+                sql_ids = {str(chunk.id) for chunk in sql_chunks}
+                chroma_ids = set(chroma_chunks.get("ids", []))
+
+                missing_in_chroma = sql_ids - chroma_ids
+                missing_in_sql = chroma_ids - sql_ids
+
+                stats["missing_in_chroma"] = len(missing_in_chroma)
+                stats["missing_in_sql"] = len(missing_in_sql)
+                stats["synced"] = len(sql_ids & chroma_ids)
+            else:
+                stats["missing_in_chroma"] = stats["sql_chunks"]
+                logger.warning("⚠️ Chroma unavailable - sync stats incomplete")
+
             logger.info(f"📊 Database sync stats: {stats}")
             return stats
             
@@ -1125,7 +1153,7 @@ class DocumentUploadService:
     async def get_database_status(self) -> Dict[str, Any]:
         """
         Get status of both SQL and Chroma databases.
-        
+
         Returns:
             Dictionary with database status information
         """
@@ -1140,11 +1168,14 @@ class DocumentUploadService:
                 )
             )
             sql_row = sql_stats.first()
-            
-            # Get Chroma database status
-            chroma_collection = self.dual_db_manager.vectorstore._collection
-            chroma_count = chroma_collection.count()
-            
+
+            # Get Chroma database status (if available)
+            chroma_count = 0
+            chroma_available = self.dual_db_manager.vectorstore is not None
+            if chroma_available:
+                chroma_collection = self.dual_db_manager.vectorstore._collection
+                chroma_count = chroma_collection.count()
+
             return {
                 "sql_database": {
                     "documents": sql_row.documents or 0,
@@ -1153,15 +1184,16 @@ class DocumentUploadService:
                     "chunks": sql_row.chunks or 0
                 },
                 "chroma_database": {
-                    "chunks": chroma_count
+                    "chunks": chroma_count,
+                    "available": chroma_available
                 },
                 "synchronization": {
                     "sql_chunks": sql_row.chunks or 0,
                     "chroma_chunks": chroma_count,
-                    "sync_status": "synchronized" if (sql_row.chunks or 0) == chroma_count else "out_of_sync"
+                    "sync_status": "chroma_unavailable" if not chroma_available else ("synchronized" if (sql_row.chunks or 0) == chroma_count else "out_of_sync")
                 }
             }
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to get database status: {e}")
             return {
@@ -1185,7 +1217,16 @@ class DocumentUploadService:
             Dictionary with operation result and statistics
         """
         logger.info(f"🚀 Starting embedding generation for document {document_id}")
-        
+
+        # Check if vectorstore is available
+        if self.dual_db_manager.vectorstore is None:
+            logger.error("❌ Chroma vectorstore not available. Please use Python 3.12 or 3.13.")
+            return {
+                "success": False,
+                "message": "Chroma vectorstore not available. chromadb is not compatible with Python 3.14. Please use Python 3.12 or 3.13.",
+                "chunks_processed": 0
+            }
+
         try:
             law_source = None  # Initialize outside try block for access in finally
             # Get the document
@@ -1370,7 +1411,17 @@ class DocumentUploadService:
                     "answer": "النظام غير جاهز. يرجى المحاولة مرة أخرى لاحقاً.",
                     "message": "Database manager not initialized"
                 }
-            
+
+            # Check if vectorstore is available
+            if self.dual_db_manager.vectorstore is None:
+                logger.error("❌ Chroma vectorstore not available")
+                return {
+                    "success": False,
+                    "query": query,
+                    "answer": "خدمة البحث غير متوفرة. chromadb غير متوافق مع Python 3.14. يرجى استخدام Python 3.12.",
+                    "message": "Chroma vectorstore not available. Please use Python 3.12 or 3.13."
+                }
+
             # Check if Gemini client is available
             gemini_client = vectorstore_manager.get_gemini_client()
             if not gemini_client:
